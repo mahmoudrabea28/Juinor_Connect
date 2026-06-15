@@ -1,0 +1,100 @@
+Important UI Correction
+
+The current Milestones and Files implementation does NOT match the provided reference designs.
+
+Do not keep the current layout.
+
+Rebuild the Milestones and Files tabs so they visually match the attached screenshots as closely as possible.
+
+### Milestones Page Requirements
+
+Match the screenshot exactly:
+
+* Horizontal roadmap/timeline layout
+* Large connected progress line
+* Circular phase indicators
+* Status pills above each phase:
+
+  * Complete
+  * In Progress
+  * Pending
+* Phase title centered above milestone cards
+* Milestone cards positioned under each phase
+* Connected timeline showing overall project progress
+* Member avatars inside milestone cards
+* Progress bars inside milestone cards
+* KPI cards underneath:
+
+  * Team Velocity
+  * Risk Assessment
+  * Project Health
+
+The page should immediately look like a modern Linear / Notion / Jira roadmap view.
+
+Not a generic cards grid.
+
+### Files Page Requirements
+
+Match the screenshot exactly:
+
+Layout:
+
+LEFT SIDE (70%)
+
+* Folder/File Explorer
+* Large file rows
+* Folder icons
+* File icons
+* File size
+* Last modified
+* Lock indicators
+* Active editor indicators
+
+RIGHT SIDE (30%)
+
+* Version History panel
+* Activity timeline
+* User actions
+* Upload history
+* Audit logs
+
+BOTTOM RIGHT
+
+* Storage Usage Card
+
+TOP ACTIONS
+
+* Download Button
+* Upload Files Button
+* Grid/List View Toggle
+
+The page should resemble:
+
+* Google Drive
+* Dropbox
+* Linear Assets
+* GitHub File Explorer
+
+Not a simple table.
+
+### Visual Priority
+
+Priority order:
+
+1. Match the screenshots visually
+2. Keep existing design system
+3. Keep functionality
+
+If functionality works but UI does not resemble the screenshots, the task is NOT complete.
+
+### Final Goal
+
+When comparing the implementation to the provided screenshots:
+
+* Layout structure should be nearly identical
+* Spacing hierarchy should be nearly identical
+* Card placement should be nearly identical
+* Timeline structure should be nearly identical
+* Files explorer structure should be nearly identical
+
+Use the screenshots as the primary UI reference.
