@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "vanilla-tilt": "^1.8.1",
     "vue": "^3.5.34",
     "vue-router": "^5.1.0"
   },

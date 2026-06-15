@@ -158,18 +158,8 @@ const handleKeyPress = (event) => {
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
-
-body {
-  font-family: 'Inter', sans-serif;
-  min-height: 100vh;
-  background-color: #E2E8F0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Page background */

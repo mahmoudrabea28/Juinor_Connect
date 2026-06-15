@@ -6,17 +6,24 @@
         <span class="dot dot--top-right"></span>
         <span class="dot dot--bottom-left"></span>
         <div class="image-switch-wrapper">
-          <Transition name="image-transition" mode="out-in">
-            <img 
-              :key="isLoginMode ? 'login' : 'signup'" 
-              :src="isLoginMode ? loginImage : signupImage" 
-              width="380" 
-              height="320" 
-              :alt="isLoginMode ? 'Login illustration' : 'Signup illustration'" 
-              class="floating-image" 
-              @error="handleImageError"
-            />
-          </Transition>
+          <img 
+            :src="loginImage" 
+            width="380" 
+            height="320" 
+            alt="Login illustration" 
+            class="floating-image" 
+            :class="{ 'image-active': isLoginMode, 'image-hidden': !isLoginMode }"
+            @error="handleImageError"
+          />
+          <img 
+            :src="signupImage" 
+            width="380" 
+            height="320" 
+            alt="Signup illustration" 
+            class="floating-image" 
+            :class="{ 'image-active': !isLoginMode, 'image-hidden': isLoginMode }"
+            @error="handleImageError"
+          />
         </div>
       </div>
 
@@ -227,14 +234,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive } from 'vue'
+
 const loginImage = new URL('../../assets/images/Login Image.png', import.meta.url).href
 const signupImage = new URL('../../assets/images/Register.png', import.meta.url).href
 const fallbackImage = loginImage
 
 const isLoginMode = ref(true)
 const loading = ref(false)
-
 
 const loginForm = reactive({
   email: '',
@@ -297,19 +304,16 @@ const handleImageError = (e) => {
 const handleLogin = (event) => {
   addRipple(loginBtnRef.value, event)
   
-
   errors.email = ''
   errors.password = ''
   
   let isValid = true
   
-
   if (!loginForm.email.trim() || !isValidEmail(loginForm.email.trim())) {
     errors.email = 'Please enter a valid email address.'
     isValid = false
   }
   
-
   if (!loginForm.password) {
     errors.password = 'Please enter your password.'
     isValid = false
@@ -323,7 +327,6 @@ const handleLogin = (event) => {
     }, 1500)
   }
 }
-
 
 const handleSignup = (event) => {
   addRipple(signupBtnRef.value, event)
@@ -351,7 +354,6 @@ const handleSignup = (event) => {
     isValid = false
   }
   
- 
   if (signupForm.password !== signupForm.confirmPassword) {
     errors.confirmPassword = 'Passwords do not match'
     isValid = false
@@ -384,7 +386,6 @@ const socialLogin = (provider) => {
 
 <style scoped>
 *, *::before, *::after { 
-  box-sizing: border-box; 
   margin: 0; 
   padding: 0; 
 }
@@ -474,35 +475,50 @@ const socialLogin = (provider) => {
   50% { opacity: 1; transform: scale(1.2); }
 }
 
+
+.image-switch-wrapper {
+  position: relative;
+  width: 420px;
+  max-width: 85%;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .floating-image {
   display: block;
-   width: 380px;
-  max-width: 85%;
-  height: auto;
+  position: absolute; 
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  position: relative;
   z-index: 2;
+  will-change: transform, opacity, visibility;
   animation: floatUpDown 3.5s ease-in-out infinite;
-  will-change: transform;
+}
+
+.image-active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.4s;
+}
+
+.image-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.92);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
 }
 
 @keyframes floatUpDown {
-  0% { transform: translateY(0px); }
+  0% { translateY: 0px; }
   50% { transform: translateY(-18px); }
   100% { transform: translateY(0px); }
 }
 
 .floating-image:hover {
   animation-duration: 2s;
-}
-
-.image-switch-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .card__right {
@@ -778,6 +794,7 @@ const socialLogin = (provider) => {
 }
 
 .signup-link:hover { color: #2B7FFF; }
+
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.38s cubic-bezier(0.2, 0.9, 0.4, 1.1);
@@ -793,29 +810,6 @@ const socialLogin = (provider) => {
   transform: translateX(-12px);
 }
 
-.image-transition-enter-active,
-.image-transition-leave-active {
-  transition: all 0.4s ease-out;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-transition-enter-from {
-  opacity: 0;
-  transform: scale(0.94);
-}
-
-.image-transition-leave-to {
-  opacity: 0;
-  transform: scale(1.02);
-}
-
 @keyframes ripple {
   to { transform: scale(4); opacity: 0; }
 }
@@ -828,6 +822,10 @@ const socialLogin = (provider) => {
   .card__left {
     flex: 0 0 260px;
     min-height: 260px;
+  }
+  .image-switch-wrapper {
+    width: 220px;
+    height: 180px;
   }
   .card__right {
     padding: 40px 40px 36px;
@@ -848,6 +846,10 @@ const socialLogin = (provider) => {
     min-height: 100vh;
   }
   .card__left { flex: 0 0 200px; min-height: 200px; }
+  .image-switch-wrapper {
+    width: 180px;
+    height: 140px;
+  }
   .card__right { padding: 28px 24px 32px; }
   .brand { font-size: 30px; }
   .social-row { flex-direction: column; }
