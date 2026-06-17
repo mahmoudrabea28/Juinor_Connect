@@ -1,45 +1,26 @@
 <template>
   <div class="page-bg">
     <div class="card">
-
-      <!-- LEFT PANEL -->
       <div class="card__left">
         <span class="dot dot--top-right"></span>
         <span class="dot dot--bottom-left"></span>
-
         <img 
           :src="otpImage" 
-          width="380" 
-          height="320" 
           alt="OTP Verification" 
           class="floating-image" 
-          @error="handleImageError"
-          @mouseenter="speedUpAnimation"
-          @mouseleave="resetAnimation"
         />
       </div>
 
-      <!-- RIGHT PANEL -->
       <div class="card__right">
-
         <h1 class="otp-heading">Email <span>Verification</span></h1>
-
-        <p class="otp-description">
-          Enter the 6-digit verification code sent to
-        </p>
-
+        <p class="otp-description">Enter the 6-digit verification code sent to</p>
         <div class="email-display">{{ userEmail }}</div>
 
-        <!-- MESSAGE -->
-        <div v-if="message.text"
-             :class="message.type === 'error' ? 'error-message' : 'success-message'">
-          <i :class="message.type === 'error'
-                    ? 'fas fa-exclamation-triangle'
-                    : 'fas fa-check-circle'"></i>
+        <div v-if="message.text" :class="message.type === 'error' ? 'error-message' : 'success-message'">
+          <i :class="message.type === 'error' ? 'fas fa-exclamation-triangle' : 'fas fa-check-circle'"></i>
           {{ message.text }}
         </div>
 
-        <!-- OTP INPUTS -->
         <div class="otp-container">
           <input
             v-for="(digit, index) in otpDigits"
@@ -55,42 +36,24 @@
           />
         </div>
 
-        <!-- TIMER -->
         <div class="timer-row">
           <div class="timer">
             <i class="fas fa-hourglass-half"></i>
             <span>{{ timerDisplay }}</span>
           </div>
-
-          <a href="#"
-             @click.prevent="handleResend"
-             class="resend-link"
-             :class="{ disabled: !canResend }">
+          <a href="#" @click.prevent="handleResend" class="resend-link" :class="{ disabled: !canResend }">
             {{ isResending ? 'Sending...' : 'Resend OTP?' }}
           </a>
         </div>
 
-        <!-- VERIFY BUTTON -->
-        <button
-          class="btn-verify"
-          @click="handleVerify"
-          :disabled="isVerifying"
-          ref="verifyBtnRef"
-        >
-          <span v-if="isVerifying">
-            Verifying... <i class="fas fa-spinner fa-pulse"></i>
-          </span>
-
-          <span v-else>
-            Verify <i class="fas fa-arrow-right btn-arrow"></i>
-          </span>
+        <button class="btn-verify" @click="handleVerify" :disabled="isVerifying">
+          <span v-if="isVerifying">Verifying... <i class="fas fa-spinner fa-pulse"></i></span>
+          <span v-else>Verify <i class="fas fa-arrow-right btn-arrow"></i></span>
         </button>
 
-        <!-- BACK LINK -->
         <div class="back-link">
           <router-link to="/register">← Back to Login</router-link>
         </div>
-
       </div>
     </div>
   </div>
@@ -99,23 +62,19 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { verifyCode, forgotPassword } from '../../services/api'
 
 const router = useRouter()
-
 const otpImage = new URL('../../assets/images/chat_bubble.png', import.meta.url).href
-const fallbackImage = 'https://placehold.co/380x320/E0E7FF/4F39F6?text=Junior+Connect'
 
 const urlParams = new URLSearchParams(window.location.search)
-const userEmail = ref(urlParams.get('email') || 'user@example.com')
+const userEmail = ref(urlParams.get('email') || '')
 
 const otpDigits = ref(['', '', '', '', '', ''])
 const otpInputs = ref([])
-
 const isVerifying = ref(false)
 const isResending = ref(false)
-
 const message = ref({ text: '', type: '' })
-
 const timeLeft = ref(59)
 let timerInterval = null
 const canResend = ref(false)
@@ -126,129 +85,90 @@ const timerDisplay = computed(() => {
   return `${mins}:${secs < 10 ? '0' : ''}${secs}`
 })
 
-const verifyBtnRef = ref(null)
-
 const startTimer = () => {
   if (timerInterval) clearInterval(timerInterval)
-
   timeLeft.value = 59
   canResend.value = false
-
   timerInterval = setInterval(() => {
     if (timeLeft.value <= 0) {
       clearInterval(timerInterval)
       canResend.value = true
-      timerInterval = null
     } else {
       timeLeft.value--
     }
   }, 1000)
 }
 
-/* OTP */
-const getOTPCode = () => {
-  const code = otpDigits.value.join('')
-  return code.length === 6 && /^\d{6}$/.test(code) ? code : null
-}
-
-const handleVerify = async (event) => {
+const handleVerify = async () => {
   clearMessages()
-
-  const code = getOTPCode()
-
-  if (!code) {
-    showMessage('error', 'Please enter the complete 6-digit verification code.')
+  const code = otpDigits.value.join('')
+  
+  if (code.length !== 6) {
+    showMessage('error', 'Please enter the complete 6-digit code.')
     return
   }
 
   isVerifying.value = true
-
-  setTimeout(() => {
-    isVerifying.value = false
-
-    if (code === '000000') {
-      showMessage('error', 'Invalid verification code.')
-    } else {
-      showMessage('success', 'Verified! Redirecting...')
-
-      router.push('/reset_password')
+  try {
+    const response = await verifyCode(userEmail.value, code)
+    if (response && response.token) {
+        localStorage.setItem('resetToken', response.token)
+        localStorage.setItem('resetEmail', userEmail.value)
     }
-  }, 1500)
+    
+    showMessage('success', 'Verified successfully!')
+    setTimeout(() => router.push('/reset_password'), 1000)
+  } catch (error) {
+    showMessage('error', error.message || 'Invalid code.')
+  } finally {
+    isVerifying.value = false
+  }
 }
 
 const handleResend = async () => {
-  if (!canResend.value) {
-    showMessage('error', 'Please wait before requesting a new code.')
-    return
-  }
-
+  if (!canResend.value) return
   isResending.value = true
-
-  setTimeout(() => {
-    isResending.value = false
-    showMessage('success', 'New OTP sent!')
+  try {
+    await forgotPassword(userEmail.value)
+    showMessage('success', 'New code sent!')
     otpDigits.value = ['', '', '', '', '', '']
     startTimer()
-  }, 800)
+  } catch (error) {
+    showMessage('error', 'Failed to resend.')
+  } finally {
+    isResending.value = false
+  }
 }
 
-/* INPUTS */
+
 const handleOtpInput = (index, event) => {
   let value = event.target.value.replace(/[^0-9]/g, '')
   otpDigits.value[index] = value.charAt(0)
-
-  if (value && index < 5) {
-    otpInputs.value[index + 1]?.focus()
-  }
+  if (value && index < 5) otpInputs.value[index + 1]?.focus()
 }
 
 const handleOtpKeydown = (index, event) => {
-  if (event.key === 'Backspace' && !otpDigits.value[index] && index > 0) {
-    otpInputs.value[index - 1]?.focus()
-  }
+  if (event.key === 'Backspace' && !otpDigits.value[index] && index > 0) otpInputs.value[index - 1]?.focus()
 }
 
 const handleOtpPaste = (event) => {
   event.preventDefault()
-
-  const pasted = event.clipboardData.getData('text')
-  const digits = pasted.replace(/[^0-9]/g, '').slice(0, 6)
-
-  digits.split('').forEach((d, i) => {
-    otpDigits.value[i] = d
-  })
+  const pasted = event.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6).split('')
+  pasted.forEach((d, i) => otpDigits.value[i] = d)
 }
+
 const showMessage = (type, text) => {
   message.value = { type, text }
-
-  setTimeout(() => {
-    message.value = { type: '', text: '' }
-  }, 4000)
+  setTimeout(() => message.value = { type: '', text: '' }, 4000)
 }
 
-const clearMessages = () => {
-  message.value = { type: '', text: '' }
-}
-const handleImageError = (e) => {
-  e.target.src = fallbackImage
-}
-
-const speedUpAnimation = (e) => {
-  e.target.style.animationDuration = '2s'
-}
-
-const resetAnimation = (e) => {
-  e.target.style.animationDuration = '3.5s'
-}
+const clearMessages = () => message.value = { type: '', text: '' }
 
 onMounted(() => {
   startTimer()
-  otpInputs.value[0]?.focus()
 })
 
-onUnmounted(() => {
-  if (timerInterval) clearInterval(timerInterval)
-})
+onUnmounted(() => { if (timerInterval) clearInterval(timerInterval) })
 </script>
 <style scoped>
 *,

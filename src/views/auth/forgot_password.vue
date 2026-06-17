@@ -1,7 +1,6 @@
 <template>
   <div class="page-bg">
     <div class="card">
-      <!-- LEFT PANEL with FLOATING illustration -->
       <div class="card__left">
         <span class="dot dot--top-right"></span>
         <span class="dot dot--bottom-left"></span>
@@ -19,18 +18,15 @@
         </div>
       </div>
 
-      <!-- RIGHT PANEL - Forgot Password Form -->
       <div class="card__right">
         <h1 class="forgot-heading">Forget your <br /><span>Password?</span></h1>
         <p class="forgot-description">Enter your email and we'll send you a verification code</p>
 
-        <!-- Success Message -->
         <div v-if="successMessage" class="success-message">
           <i class="fas fa-check-circle"></i>
           <span>{{ successMessage }}</span>
         </div>
 
-        <!-- Email field -->
         <div class="field">
           <label class="field__label" for="reset-email">Email</label>
           <div class="field__input-wrap">
@@ -49,14 +45,17 @@
           <span v-if="errorMessage" class="field__error">{{ errorMessage }}</span>
         </div>
 
-        <!-- Next button -->
-       <router-link to="/otp" class="btn-next" style="text-decoration: none;">
-  Next <i class="fas fa-arrow-right btn-arrow"></i>
-</router-link>
+        <button 
+          class="btn-next" 
+          :disabled="isLoading" 
+          @click="handleSendCode"
+        >
+          {{ isLoading ? 'Sending...' : 'Next' }}
+          <i v-if="!isLoading" class="fas fa-arrow-right btn-arrow"></i>
+        </button>
 
-        <!-- Back to login link -->
         <div class="back-link">
-          Remember your password? <router-link to="/register" @click.prevent="goToLogin">Login</router-link>
+          Remember your password? <router-link to="/login">Login</router-link>
         </div>
       </div>
     </div>
@@ -65,95 +64,52 @@
 
 <script setup>
 import { ref } from 'vue'
+import { forgotPassword } from '../../services/api' 
+
 const forgotImage = new URL('../../assets/images/Forget password.png', import.meta.url).href
 const fallbackImage = 'https://placehold.co/380x320/E0E7FF/4F39F6?text=Junior+Connect'
 
-// Reactive state
 const email = ref('')
 const errorMessage = ref('')
 const successMessage = ref('')
 const isLoading = ref(false)
-const sendBtnRef = ref(null)
-const speedUpAnimation = (e) => {
-  e.target.style.animationDuration = '2s'
-}
-
-const resetAnimation = (e) => {
-  e.target.style.animationDuration = '3.5s'
-}
-const handleImageError = (e) => {
-  e.target.src = fallbackImage
-}
-const isValidEmail = (emailStr) => {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailStr)
-}
-const clearError = () => {
-  errorMessage.value = ''
-}
-const addRipple = (btnElement, event) => {
-  if (!btnElement) return
-  
-  const oldRipple = btnElement.querySelector('.ripple-effect')
-  if (oldRipple) oldRipple.remove()
-  
-  const ripple = document.createElement('span')
-  ripple.className = 'ripple-effect'
-  const rect = btnElement.getBoundingClientRect()
-  const size = Math.max(rect.width, rect.height)
-  ripple.style.cssText = `
-    position: absolute;
-    width: ${size}px;
-    height: ${size}px;
-    left: ${event.clientX - rect.left - size / 2}px;
-    top: ${event.clientY - rect.top - size / 2}px;
-    background: rgba(255,255,255,0.3);
-    border-radius: 50%;
-    transform: scale(0);
-    animation: ripple 0.5s linear;
-    pointer-events: none;
-  `
-  btnElement.style.position = 'relative'
-  btnElement.style.overflow = 'hidden'
-  btnElement.appendChild(ripple)
-  setTimeout(() => ripple.remove(), 520)
-}
-const goToOTPPage = (emailValue) => {
-  window.location.href = `./OTP.html?email=${encodeURIComponent(emailValue)}`
-}
-const handleSendCode = (event) => {
-  addRipple(sendBtnRef.value, event)
-  clearError()
-  successMessage.value = ''
-  
+const handleSendCode = async (event) => {
   const emailValue = email.value.trim()
-
+  
   if (!emailValue) {
     errorMessage.value = 'Please enter your email address.'
     return
   }
-  
-  if (!isValidEmail(emailValue)) {
-    errorMessage.value = 'Please enter a valid email address (e.g., name@example.com).'
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
+    errorMessage.value = 'Please enter a valid email address.'
     return
   }
 
   isLoading.value = true
+  errorMessage.value = ''
   
-  
-  setTimeout(() => {
-    isLoading.value = false
+  try {
+    await forgotPassword(emailValue)
+    successMessage.value = 'Verification code has been sent to your email.'
+
+    setTimeout(() => {
+      window.location.href = `./OTP?email=${encodeURIComponent(emailValue)}`
+    }, 1000)
     
-    goToOTPPage(emailValue)
-  }, 800)
-}
-const handleKeyPress = (event) => {
-  if (event.key === 'Enter') {
-    event.preventDefault()
-    handleSendCode(event)
+  } catch (error) {
+    errorMessage.value = error.message || 'Something went wrong.'
+  } finally {
+    isLoading.value = false
   }
 }
+const speedUpAnimation = (e) => (e.target.style.animationDuration = '2s')
+const resetAnimation = (e) => (e.target.style.animationDuration = '3.5s')
+const handleImageError = (e) => (e.target.src = fallbackImage)
+const clearError = () => (errorMessage.value = '')
+const handleKeyPress = (event) => {
+  if (event.key === 'Enter') handleSendCode()
+}
 </script>
-
 <style scoped>
 *,
 *::before,
