@@ -11,6 +11,14 @@ import Myproject1 from '../views/Dahboard/Myproject1.vue'
 import AI_Mentor from '../views/Dahboard/AI_Mentor.vue'
 import ChatAI from '../views/Dahboard/ChatAI.vue'
 import Dashboard_Navbar from '../components/Dashboard_Navbar.vue'
+import ScreenPersonalInfo from '../views/Onboarding/ScreenPersonalInfo.vue'
+import ScreenSkills from '../views/Onboarding/ScreenSkills.vue'
+import ScreenInterests from '../views/Onboarding/ScreenInterests.vue'
+import ScreenExperience from '../views/Onboarding/ScreenExperience.vue'
+import ScreenAvailability from '../views/Onboarding/ScreenAvailability.vue'
+import Availability from '../views/Onboarding/Availability.vue'
+import MatchwithAi from '../views/Onboarding/MatchwithAi.vue'
+import AIResult from '../views/Onboarding/AIResult.vue'
 const routes = [
   {
     path: '/',
@@ -71,11 +79,50 @@ const routes = [
     name: 'ChatAI',
     component: ChatAI
   },
+   {
+    path: '/ScreenPersonalInfo',
+    name: 'ScreenPersonalInfo',
+    component:ScreenPersonalInfo
+  },
+   {
+    path: '/ScreenSkills',
+    name: 'ScreenSkills',
+    component:ScreenSkills
+  },
+   {
+    path: '/ScreenInterests',
+    name: 'ScreenInterests',
+    component:ScreenInterests
+  },
+   {
+    path: '/ScreenExperience',
+    name: 'ScreenExperience',
+    component:ScreenExperience
+  },
+   {
+    path: '/ScreenAvailability',
+    name: 'ScreenAvailability',
+    component:ScreenAvailability
+  },
+   {
+    path: '/Availability',
+    name: 'Availability',
+    component:Availability
+  },
+   {
+    path: '/MatchwithAi',
+    name: 'MatchwithAi',
+    component:MatchwithAi 
+  },
+   {
+    path: '/AIResult',
+    name: 'AIResult',
+    component:AIResult 
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
-
 export default router

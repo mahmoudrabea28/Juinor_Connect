@@ -40,8 +40,8 @@
               :class="{ 'error-border': errors.newPassword }"
             />
             <button type="button" class="password-toggle" @click="toggleNewPassword">
-              <i class="fas" :class="showNewPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+  <i class="fas" :class="showNewPassword ? 'fa-eye' : 'fa-eye-slash'"></i>
+</button>
           </div>
           <span v-if="errors.newPassword" class="field__error">{{ errors.newPassword }}</span>
         </div>
@@ -59,9 +59,9 @@
               @input="clearFieldError('confirm-password')"
               :class="{ 'error-border': errors.confirmPassword }"
             />
-            <button type="button" class="password-toggle" @click="toggleConfirmPassword">
-              <i class="fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
-            </button>
+           <button type="button" class="password-toggle" @click="toggleConfirmPassword">
+  <i class="fas" :class="showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'"></i>
+</button>
           </div>
           <span v-if="errors.confirmPassword" class="field__error">{{ errors.confirmPassword }}</span>
         </div>
@@ -77,7 +77,7 @@
         </button>
 
         <div class="back-link">
-          Remember your password? <router-link to="/login">Login</router-link>
+          Remember your password? <router-link to="/register">Login</router-link>
         </div>
       </div>
     </div>

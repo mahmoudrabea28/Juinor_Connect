@@ -31,7 +31,10 @@
               <div class="field__input-wrap">
                 <i class="field__icon fas fa-lock"></i>
                 <input id="password" class="field__input" :type="showPassword ? 'text' : 'password'" placeholder="enter your password" v-model="loginForm.password" @input="clearFieldError('password')" />
-                <i class="field__toggle-icon fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click="togglePasswordVisibility"></i>
+                <i class="field__toggle-icon fas" 
+   :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" 
+   @click="togglePasswordVisibility">
+</i>
               </div>
               <span v-if="errors.password" class="field__error">{{ errors.password }}</span>
             </div>
@@ -96,7 +99,10 @@
               <div class="field__input-wrap">
                 <i class="field__icon fas fa-lock"></i>
                 <input id="signup-password" class="field__input" :type="showPassword ? 'text' : 'password'" placeholder="Create a strong password" v-model="signupForm.password" @input="clearFieldError('signup-password')" />
-                <i class="field__toggle-icon fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'" @click="togglePasswordVisibility"></i>
+                <i class="field__toggle-icon fas" 
+   :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" 
+   @click="togglePasswordVisibility">
+</i>
               </div>
               <span v-if="errors.password" class="field__error">{{ errors.password }}</span>
             </div>
@@ -106,7 +112,10 @@
               <div class="field__input-wrap">
                 <i class="field__icon fas fa-check-circle"></i>
                 <input id="confirm-pwd" class="field__input" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" v-model="signupForm.confirmPassword" @input="clearFieldError('confirm-pwd')" />
-                <i class="field__toggle-icon fas" :class="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'" @click="toggleConfirmPasswordVisibility"></i>
+               <i class="field__toggle-icon fas" 
+   :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" 
+   @click="togglePasswordVisibility">
+</i>
               </div>
               <span v-if="errors.confirmPassword" class="field__error">{{ errors.confirmPassword }}</span>
             </div>
@@ -224,7 +233,7 @@ const handleSignup = async (event) => {
     loading.value = true
     try {
       await register({ name: signupForm.fullname.trim(), email: signupForm.email.trim(), password: signupForm.password, remember: signupForm.rememberMe })
-      router.push('/')
+      router.push('/ScreenPersonalInfo')
     } catch (error) { serverErrorMessage.value = error.message }
     finally { loading.value = false }
   }
