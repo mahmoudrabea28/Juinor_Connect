@@ -1,0 +1,33 @@
+Apply the existing Project Management global CSS styles consistently across all Project Management feature files.
+
+🚀 Requirements
+1. CSS Consistency
+There is an existing global Project Management stylesheet already created in the project.
+Ensure ALL Project Management pages and components use this same stylesheet consistently.
+Do NOT duplicate styles inside components.
+Do NOT rewrite or modify the design system.
+2. Scope
+
+Apply styles to all files inside:
+
+src/views/projectManagment/**
+
+including:
+
+Dashboard
+AllProjects
+ProjectDetails
+Tabs components (Overview, Tasks, Files, Milestones, Teams)
+3. Rules (VERY IMPORTANT)
+Do NOT change UI layout or Tailwind classes
+Do NOT modify design or spacing
+Do NOT refactor logic or functionality
+Only ensure correct CSS file is imported and applied everywhere
+Do NOT create new styling system
+4. Goal
+Ensure Project Management module has a unified and consistent style
+All pages should visually match the original design
+No broken or missing styles
+💡 Extra Instruction
+
+If any component is missing the global Project Management CSS import, add it properly without affecting existing imports.

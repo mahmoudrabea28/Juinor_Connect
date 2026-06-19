@@ -64,3 +64,6 @@ a {
     transition-duration: 0.01ms !important;
   }
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
