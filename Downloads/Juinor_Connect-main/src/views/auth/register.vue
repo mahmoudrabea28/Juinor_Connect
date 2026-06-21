@@ -111,12 +111,20 @@
               <label class="field__label" for="confirm-pwd">Confirm password</label>
               <div class="field__input-wrap">
                 <i class="field__icon fas fa-check-circle"></i>
-                <input id="confirm-pwd" class="field__input" :type="showConfirmPassword ? 'text' : 'password'" placeholder="Confirm password" v-model="signupForm.confirmPassword" @input="clearFieldError('confirm-pwd')" />
-               <i class="field__toggle-icon fas" 
-   :class="showPassword ? 'fa-eye' : 'fa-eye-slash'" 
-   @click="togglePasswordVisibility">
-</i>
-              </div>
+<input
+  id="confirm-pwd"
+  class="field__input"
+  :type="showConfirmPassword ? 'text' : 'password'"
+  placeholder="Confirm password"
+  v-model="signupForm.confirmPassword"
+  @input="clearFieldError('confirmPassword')"
+/>
+
+<i
+  class="field__toggle-icon fas"
+  :class="showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'"
+  @click="toggleConfirmPasswordVisibility"
+></i>        </div>
               <span v-if="errors.confirmPassword" class="field__error">{{ errors.confirmPassword }}</span>
             </div>
 
@@ -214,7 +222,15 @@ const handleLogin = async (event) => {
   if (isValid) {
     loading.value = true
     try {
-      await login({ email: loginForm.email.trim(), password: loginForm.password, remember: loginForm.rememberMe })
+      const res = await login({
+  email: loginForm.email.trim(),
+  password: loginForm.password,
+  remember: loginForm.rememberMe
+})
+
+localStorage.setItem('user', JSON.stringify(res.user))
+localStorage.setItem('token', res.token)
+   window.dispatchEvent(new Event('user-updated'))
       router.push('/profile')
     } catch (error) { serverErrorMessage.value = error.message }
     finally { loading.value = false }
@@ -232,8 +248,18 @@ const handleSignup = async (event) => {
   if (isValid) {
     loading.value = true
     try {
-      await register({ name: signupForm.fullname.trim(), email: signupForm.email.trim(), password: signupForm.password, remember: signupForm.rememberMe })
+    const res = await register({
+  name: signupForm.fullname.trim(),
+  email: signupForm.email.trim(),
+  password: signupForm.password,
+  remember: signupForm.rememberMe
+})
+
+localStorage.setItem('user', JSON.stringify(res.user))
+localStorage.setItem('token', res.token)
+ window.dispatchEvent(new Event('user-updated'))
       router.push('/ScreenPersonalInfo')
+     
     } catch (error) { serverErrorMessage.value = error.message }
     finally { loading.value = false }
   }

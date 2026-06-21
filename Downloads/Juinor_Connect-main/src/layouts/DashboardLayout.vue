@@ -14,6 +14,6 @@
 // Shared shell for every dashboard page: the navbar and sidebar are
 // rendered once here, and only the routed page content underneath
 // (<router-view />) swaps when navigating between sidebar items.
-import Navbar from '../components/profile/Navbar.vue'
+import Navbar from '../components/Navbar.vue'
 import Sidebar from '../components/profile/Sidebar.vue'
 </script>

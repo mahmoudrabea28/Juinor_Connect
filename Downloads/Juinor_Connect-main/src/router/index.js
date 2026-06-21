@@ -67,12 +67,12 @@ const routes = [
   { path: '/Home', component: Home },
 
   /* ================= DASHBOARD ================= */
-  { path: '/Overview', component: Overview },
+  { path: '/Overview', component: Overview,   meta: { requiresAuth: true } },
   { path: '/TeamBrowse', component: TeamBrowse },
   { path: '/Myproject1', component: Myproject1 },
   { path: '/AI_Mentor', component: AI_Mentor },
   { path: '/ChatAI', component: ChatAI },
-  { path: '/browse-teams', name: 'BrowseTeamsPage', component: BrowseTeamsPage },
+  { path: '/browse-teams', name: 'BrowseTeamsPage', component: BrowseTeamsPage,   meta: { requiresAuth: true } },
   { path: '/browse-teams/:id', name: 'TeamDetailsPage', component: TeamDetailsPage, props: true },
 
   /* ================= ONBOARDING ================= */
@@ -90,7 +90,8 @@ const routes = [
   {
     path: '/projects',
     name: 'ProjectsDashboard',
-    component: Dashboard
+    component: Dashboard,
+      meta: { requiresAuth: true }
   },
 
   {
@@ -142,5 +143,13 @@ const router = createRouter({
     return { top: 0, behavior: 'smooth' }
   }
 })
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
 
+  if (to.meta.requiresAuth && !token) {
+    next('/register')
+  } else {
+    next()
+  }
+})
 export default router
