@@ -98,3 +98,24 @@ export const getMyProjects = () => api("/api/projects/my");
 export const getProjectById = (id) => api(`/api/projects/${id}`);
 export const joinProject = (data) => api("/api/projects/join", { method: "POST", body: data });
 export const leaveProject = (id) => api(`/api/projects/${id}/leave`, { method: "POST" });
+
+/*----- Tasks -----*/
+export const generateTasks = (projectId) => api(`/api/tasks/${projectId}/generate`, { method: "POST" });
+export const getProjectTasks = (projectId) => api(`/api/tasks/${projectId}`);
+export const submitTaskCode = (projectId, taskId, code) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/submit`, { method: "POST", body: { code } });
+export const getTaskSubmissions = (projectId, taskId) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/submissions`);
+export const getTaskChat = (projectId, taskId) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/chat`);
+export const sendTaskChatMessage = (projectId, taskId, data) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/chat`, { method: "POST", body: data });
+export const getTaskWelcome = (projectId, taskId) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/welcome`);
+export const deleteTaskChat = (projectId, taskId) => 
+  api(`/api/tasks/${projectId}/tasks/${taskId}/chat`, { method: "DELETE" });
+
+/*----- Suggestions -----*/
+export const getTopSuggestions = () => api("/api/suggestions/top-suggestions");
+export const getRecommendations = () => api("/api/suggestions/recommendations");
+export const regenerateRecommendations = () => api("/api/suggestions/recommendations/regenerate", { method: "POST" });
