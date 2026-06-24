@@ -23,7 +23,8 @@
       <!-- Snapshot -->
       <ProfileSnapshot :profile="profile" />
 
-      <div v-if="loading" class="bt-state">Loading recommendations...</div>
+      <LoadingScreen :visible="loading" />
+      <div v-if="loading" style="display:none"></div>
       <div v-else-if="error" class="bt-state bt-err">{{ error }}</div>
 
       <template v-else-if="filteredProjects.length">
@@ -77,6 +78,7 @@ import Navbar from '../../components/Navbar.vue'
 import ProfileSnapshot from '../../components/teams/ProfileSnapshot.vue'
 import TeamCard from '../../components/teams/TeamCard.vue'
 import MatchBreakdown from '../../components/teams/MatchBreakdown.vue'
+import LoadingScreen from '../../components/LoadingScreen.vue'
 
 const projects = ref([])
 const profile = ref(null)

@@ -1,6 +1,7 @@
 <template>
    <DashboardLayout>
-  <div class="browse-teams-container">
+  <LoadingScreen :visible="loading" />
+  <div class="browse-teams-container" v-if="!loading">
     
     <div class="page-banner">
       <span>Browse Teams</span>
@@ -150,14 +151,17 @@
 
 <script>
 import DashboardLayout from '../../components/Dashboard_Navbar.vue'; 
+import LoadingScreen from '../../components/LoadingScreen.vue';
 
 export default {
   name: 'BrowseTeams',
    components: {
-    DashboardLayout
+    DashboardLayout,
+    LoadingScreen
   },
   data() {
     return {
+      loading: true,
       availableSkills: ['React', 'Python', 'NodeJS', 'Typescript', 'Aws'],
       selectedSkills: [],
       selectedCategory: 'All',
@@ -223,6 +227,12 @@ export default {
       // هنا يمكنك إضافة منطق الفلترة الفعلي بناءً على الـ Data المرتبطة بالـ inputs
       return this.teams;
     }
+  },
+  mounted() {
+    // يمكنك استبدال هذا بالـ API call الحقيقي لما يخلص
+    setTimeout(() => {
+      this.loading = false;
+    }, 2000);
   },
   methods: {
     resetFilters() {
