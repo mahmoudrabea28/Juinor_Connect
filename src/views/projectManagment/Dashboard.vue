@@ -246,7 +246,7 @@ watch(
 
 <main
   v-else
-  class="px-main-margin-x py-main-margin-y space-y-gap-custom"
+  class="page-shell py-main-margin-y space-y-gap-custom"
 >
 
       <!-- ── HEADER GREETING ───────────────────────────────────────────── -->

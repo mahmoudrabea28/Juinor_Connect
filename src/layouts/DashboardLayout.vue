@@ -1,9 +1,9 @@
 <template>
   <div class="flex flex-col min-h-screen bg-[#eef0f9]">
     <Navbar />
-    <div class="flex flex-1">
+    <div class="layout-shell flex flex-1 gap-6 py-8">
       <Sidebar />
-      <main class="flex-1 p-8">
+      <main class="flex-1 min-w-0">
         <router-view />
       </main>
     </div>
@@ -17,3 +17,12 @@
 import Navbar from '../components/Navbar.vue'
 import Sidebar from '../components/profile/Sidebar.vue'
 </script>
+
+<style scoped>
+/* Match the navbar's inner container exactly so the sidebar + content
+   start and end on the same gridlines as the navbar's logo and Logout. */
+.layout-shell {
+  width: min(1280px, 100% - 48px);
+  margin-inline: auto;
+}
+</style>

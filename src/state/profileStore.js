@@ -16,6 +16,58 @@ export const profileStore = reactive({
 
   defaultAvatar: DEFAULT_AVATAR,
 
+  // ── Loading state ─────────────────────────────────────────────────
+  // `true` until loadProfile() finishes the first fetch from the DB.
+  // `loaded` guards against re-fetching every time a page mounts.
+  loading: true,
+  loaded: false,
+
+  // Fetch the profile from the backend (GET /api/profile) and fill the
+  // store. Pages await this and show <LoadingScreen> while it runs.
+  async loadProfile({ force = false } = {}) {
+    if (this.loaded && !force) return
+    this.loading = true
+    try {
+      const { getProfile } = await import('../services/api.js')
+      const data = await getProfile()
+      const p = data.profile || {}
+
+      // Profile card
+      Object.assign(this.profile, {
+        name: p.name ?? this.profile.name,
+        headline: p.headline ?? this.profile.headline,
+        bio: p.bio ?? this.profile.bio,
+        avatar: p.avatar || this.defaultAvatar,
+      })
+
+      // My Skills chips (backend returns an array of strings)
+      if (Array.isArray(p.skills)) {
+        this.skills = p.skills.map((label, i) => ({
+          label,
+          gradient: i === 0,
+        }))
+      }
+
+      // Personal Information form
+      if (p.personalInfo) {
+        Object.assign(this.personalInfo, {
+          fullName: p.personalInfo.fullName || '',
+          role: p.personalInfo.role || '',
+          bio: p.personalInfo.bio || '',
+          github: p.personalInfo.github || '',
+          linkedin: p.personalInfo.linkedin || '',
+          location: p.personalInfo.location || '',
+        })
+      }
+
+      this.loaded = true
+    } catch (err) {
+      console.error('Failed to load profile:', err)
+    } finally {
+      this.loading = false
+    }
+  },
+
   // Merge partial updates into the live profile.
   updateProfile(updates) {
     Object.assign(this.profile, updates)

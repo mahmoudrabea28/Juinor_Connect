@@ -31,3 +31,10 @@
   --shadow-shadow-1: 0 6px 12px -4px rgba(19, 25, 39, 0.12);
   --shadow-shadow-2: 0 8px 22px -4px rgba(19, 25, 39, 0.08);
 }
+/* Shared page container — matches the navbar's inner width exactly so
+   page content starts and ends on the same gridlines as the navbar
+   (logo ↔ Logout). Use on the <main> of any full-width page. */
+.page-shell {
+  width: min(1280px, 100% - 48px);
+  margin-inline: auto;
+}

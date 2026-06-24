@@ -30,9 +30,9 @@ import MatchwithAi from '../views/Onboarding/MatchwithAi.vue'
 import AIResult from '../views/Onboarding/AIResult.vue'
 
 /* ================= PROJECTS ================= */
-import Dashboard from '../views/ProjectManagment/Dashboard.vue'
-import AllProjects from '../views/ProjectManagment/AllProjects.vue'
-import ProjectDetails from '../views/ProjectManagment//Projectdetails.vue'
+import Dashboard from '../views/projectManagment/Dashboard.vue'
+import AllProjects from '../views/projectManagment/AllProjects.vue'
+import ProjectDetails from '../views/projectManagment//Projectdetails.vue'
 /*----------------hepl center---------------------*/
 import HelpCenter from '../views/pages/HelpCenter.vue'
 import FAQ from '../views/pages/FAQ.vue'

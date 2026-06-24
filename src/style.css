@@ -67,3 +67,7 @@ a {
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+.page-shell {
+  width: min(1280px, 100% - 48px);
+  margin-inline: auto;
+}

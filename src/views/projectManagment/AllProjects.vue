@@ -146,7 +146,7 @@ const activeStatus = computed(() => {
     <Navbar />
 
     <!-- ── PAGE BODY ──────────────────────────────────────────────────────── -->
-    <main class="px-main-margin-x py-main-margin-y space-y-gap-custom">
+    <main class="page-shell py-main-margin-y space-y-gap-custom">
 
       <!-- ── PAGE HEADER ────────────────────────────────────────────────── -->
       <div class="flex items-end justify-between">
@@ -319,7 +319,7 @@ const activeStatus = computed(() => {
     </main>
 
     <!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
-    <footer class="px-main-margin-x py-6 border-t border-gray-100 flex items-center justify-between">
+    <footer class="page-shell py-6 border-t border-gray-100 flex items-center justify-between">
       <span class="font-inter text-xs text-text-gray">© 2026 JuniorConnect. All rights reserved.</span>
       <div class="flex items-center gap-4 font-inter text-xs text-text-gray">
         <a href="#" class="hover:text-text-black transition-colors">Privacy</a>

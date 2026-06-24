@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-[230px] bg-white border-r border-gray-200 shrink-0 py-6 px-3">
+  <aside class="w-[230px] shrink-0 self-start bg-white rounded-2xl shadow-sm border border-gray-100 py-5 px-3">
     <nav class="flex flex-col gap-1.5">
       <template v-for="item in items" :key="item.label">
         <!-- Wired-up pages navigate via vue-router and pick up the

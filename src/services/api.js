@@ -66,6 +66,9 @@ export async function getMe() {
 export async function logout() {
   return api("/api/auth/logout", { method: "POST" });
 }
+/*----- Profile (Profile page data: card + skills + personalInfo + portfolio) -----*/
+export const getProfile = () => api("/api/profile");
+
 /*----------------------*/
 // دوال عامة لجلب البروفايل والخيارات
 export const getOnboardingProfile = () => api("/api/onboarding");

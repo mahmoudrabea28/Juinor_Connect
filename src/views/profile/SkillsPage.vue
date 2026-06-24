@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <LoadingScreen v-if="isLoading" />
+
+  <div v-else>
     <div class="flex items-center justify-between mb-5">
       <h1 class="text-2xl font-serif text-gray-900">Your Selected Skills</h1>
       <span class="bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap">
@@ -38,14 +40,18 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import LoadingScreen from '../../components/LoadingScreen.vue'
 import { skillsStore } from '../../state/skillsStore.js'
 import SelectedSkillsList from '../../components/profile/SelectedSkillsList.vue'
 import SuggestedSkills from '../../components/profile/SuggestedSkills.vue'
 import AddSkillModal from '../../components/profile/AddSkillModal.vue'
 import { updateSkills } from '../../services/api'
-import { onMounted } from 'vue'
 import { getOnboardingProfile } from '../../services/api'
 import {getOnboardingOptions} from '../../services/api'
+
+const isLoading = ref(true)
+
 
 // Every skill change on this page (level switch, delete, add via the
 // modal) already mutates skillsStore the moment it happens, so there
@@ -91,6 +97,8 @@ onMounted(async () => {
       }))
   } catch (err) {
     console.error(err)
+  } finally {
+    isLoading.value = false
   }
 })
 
