@@ -115,7 +115,7 @@ const links = [
   { label: 'Home', path: '/' },
   { label: 'Teams', path: '/browse-teams' },
   { label: 'Projects', path: '/projects' },
-  { label: 'Dashboard', path: '/Overview' },
+  { label: 'AI Mentor', path: '/AI_Mentor' },
   { label: 'Help center', path: '/help-center' },
 ]
 

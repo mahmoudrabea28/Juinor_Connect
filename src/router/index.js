@@ -70,7 +70,7 @@ const routes = [
   { path: '/Overview', component: Overview,   meta: { requiresAuth: true } },
   { path: '/TeamBrowse', component: TeamBrowse },
   { path: '/Myproject1', component: Myproject1 },
-  { path: '/AI_Mentor', component: AI_Mentor },
+  { path: '/AI_Mentor', component: AI_Mentor , meta: { requiresAuth: true }},
   { path: '/ChatAI', component: ChatAI },
   { path: '/browse-teams', name: 'BrowseTeamsPage', component: BrowseTeamsPage,   meta: { requiresAuth: true } },
   { path: '/browse-teams/:id', name: 'TeamDetailsPage', component: TeamDetailsPage, props: true },
