@@ -108,7 +108,7 @@
 <script setup>
 import { reactive, ref, onBeforeUnmount } from 'vue'
 import { profileStore } from '../../state/profileStore'
-
+import { updatePersonalInfo } from '../../services/api'
 const emit = defineEmits(['close'])
 
 const fileInput = ref(null)
@@ -151,18 +151,30 @@ function removePhoto() {
   }
   form.avatar = profileStore.defaultAvatar
 }
+const handleSave = async () => {
+  try {
+    await updatePersonalInfo({
+      fullName: form.name,
+      currentRole: form.headline,
+      shortBio: form.bio,
+    })
 
-function handleSave() {
-  profileStore.updateProfile({
-    name: form.name,
-    headline: form.headline,
-    bio: form.bio,
-    avatar: form.avatar,
-  })
-  // Ownership of the blob URL (if any) moves to the store now,
-  // so it should not be revoked when this component unmounts.
-  pendingObjectUrl = null
-  emit('close')
+    profileStore.updateProfile({
+      name: form.name,
+      headline: form.headline,
+      bio: form.bio,
+      avatar: form.avatar,
+    })
+
+    window.dispatchEvent(
+      new CustomEvent('profile-updated')
+    )
+
+    pendingObjectUrl = null
+    emit('close')
+  } catch (err) {
+    console.error(err)
+  }
 }
 
 function handleCancel() {

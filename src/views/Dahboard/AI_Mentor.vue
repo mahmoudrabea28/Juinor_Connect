@@ -1,6 +1,7 @@
 <template>
   <Navbar/>
-    <div class="mentor-page-wrapper">
+    <LoadingScreen :visible="pageLoading" />
+    <div class="mentor-page-wrapper" v-show="!pageLoading">
       <div class="content-container">
         
         <div class="page-banner">
@@ -221,7 +222,8 @@
 </template>
 
 <script>
-// import DashboardLayout from '../../components/Dashboard_Navbar.vue';
+import Navbar from '../../components/Navbar.vue'; 
+import LoadingScreen from '../../components/LoadingScreen.vue';
 import { mentorStore } from '../../state/mentorStore.js';
 import { 
   getMyProjects, generateTasks, getProjectTasks, 
@@ -229,16 +231,16 @@ import {
   submitTaskCode, getTaskSubmissions,
   getTopSuggestions, getRecommendations 
 } from '../../services/api.js';
-import Navbar from '../../components/Navbar.vue';
 
 export default {
   name: 'AiMentor',
-  components: { Navbar },
+  components: { Navbar, LoadingScreen },
   data() {
     return {
       // Projects & Tasks — synced with mentorStore
       projects: [],
       loadingTasks: false,
+      pageLoading: true,
 
       // Chat
       chatInput: '',
@@ -285,11 +287,9 @@ export default {
   },
   async mounted() {
     await this.loadProjects();
-    // لو فيه project متختار قبل كده — حمّل التاسكات
     if (this.selectedProjectId && !this.tasks.length) {
       try { const d = await getProjectTasks(this.selectedProjectId); this.tasks = d.tasks || []; } catch(e) {}
     }
-    // لو فيه task متختار ومفيش شات — حمّله
     if (this.selectedTaskId && !this.chatMessages.length) {
       try {
         const d = await getTaskChat(this.selectedProjectId, this.selectedTaskId);
@@ -297,6 +297,7 @@ export default {
       } catch(e) {}
       this.loadSubmissions();
     }
+    this.pageLoading = false;
     this.loadSuggestions();
     this.loadRecommendations();
   },

@@ -10,8 +10,8 @@ import ProductDetailsTeams from "./ProductDetailsTeams.vue";
 import Navbar from '../../components/Navbar.vue';
 import { onMounted, watch  } from "vue";
 import { getProjectById, getProjectTasks } from "../../services/api";
-
-
+import LoadingScreen from '../../components/LoadingScreen.vue'
+const error = ref(null)
 const route = useRoute();
 const props = defineProps({ id: { type: String, default: null } });
 
@@ -73,29 +73,38 @@ function normalizeProject(data, tasks = []) {
   
 }
 async function fetchProject() {
-  loading.value = true;
+  loading.value = true
+  error.value = null
 
   try {
-    const [projectRes, tasksRes] = await Promise.all([
-      getProjectById(projectId.value),
-      getProjectTasks(projectId.value),
-    ]);
+    const projectRes = await getProjectById(projectId.value)
+    const projectRaw = projectRes.data || projectRes
 
-    const projectRaw = projectRes.data || projectRes;
+    let safeTasks = []
 
-    const tasksRaw =
-      tasksRes?.data?.tasks ||
-      tasksRes?.tasks ||
-      tasksRes?.data ||
-      tasksRes ||
-      [];
-    console.log(tasksRaw);
-    console.log("PROJECT DATA:", projectRaw);
-    const safeTasks = Array.isArray(tasksRaw) ? tasksRaw : [];
+    try {
+      const tasksRes = await getProjectTasks(projectId.value)
 
-    project.value = normalizeProject(projectRaw, safeTasks);
+      const tasksRaw =
+        tasksRes?.data?.tasks ||
+        tasksRes?.tasks ||
+        tasksRes?.data ||
+        tasksRes ||
+        []
+
+      safeTasks = Array.isArray(tasksRaw) ? tasksRaw : []
+
+    } catch (taskError) {
+      console.warn("No tasks found for project")
+      safeTasks = []
+    }
+
+    project.value = normalizeProject(projectRaw, safeTasks)
+
+  } catch (err) {
+    error.value = err.message || "Failed to load project"
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
@@ -451,10 +460,23 @@ function formatSize(mb) {
 <template>
   <div class="min-h-screen bg-[#F8FAFC] font-poppins text-text-black">
 
-    <!-- ── NAVBAR ─────────────────────────────────────────────────────────── -->
   <Navbar />
-    <!-- ── PAGE BODY ──────────────────────────────────────────────────── -->
-    <main v-if="project" class="px-main-margin-x py-10 space-y-gap-custom">
+
+  <LoadingScreen :visible="loading" />
+
+  <div v-if="loading"></div>
+
+  <div
+    v-else-if="error"
+    class="flex items-center justify-center min-h-[60vh] text-red-500"
+  >
+    {{ error }}
+  </div>
+
+  <main
+    v-else-if="project"
+    class="px-main-margin-x py-10 space-y-gap-custom"
+  >
       <button @click="router.back()" class="flex items-center text-text-gray hover:text-text-black transition group" aria-label="Go back">
         <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>

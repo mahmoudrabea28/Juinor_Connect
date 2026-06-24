@@ -77,7 +77,7 @@
           type="button"
           class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           :disabled="!profileStore.pendingSkillLabel"
-          @click="profileStore.addSkill()"
+          @click="saveSkill"
         >
           Add
         </button>
@@ -88,4 +88,32 @@
 
 <script setup>
 import { profileStore } from '../../state/profileStore'
+import { getOnboardingProfile, updateSkills } from '../../services/api'
+const saveSkill = async () => {
+  try {
+    const data = await getOnboardingProfile()
+
+    const currentSkills = data.profile?.skills || []
+
+    const selectedSkill = profileStore.pendingSkillLabel
+
+    if (!selectedSkill) return
+
+    const updatedSkills = [...currentSkills]
+
+    if (!updatedSkills.includes(selectedSkill)) {
+      updatedSkills.push(selectedSkill)
+    }
+
+    await updateSkills(updatedSkills)
+
+    window.dispatchEvent(
+      new CustomEvent('skills-updated')
+    )
+
+    profileStore.closeSkillModal()
+  } catch (err) {
+    console.error(err)
+  }
+}
 </script>

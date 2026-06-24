@@ -10,21 +10,9 @@ export const skillsStore = reactive({
   levels: LEVELS,
 
   selectedSkills: [
-    { id: 'react', name: 'React', level: 'Intermediate' },
-    { id: 'figma', name: 'Figma', level: 'Advanced' },
-    { id: 'python', name: 'Python', level: 'Beginner' },
-    { id: 'nodejs', name: 'Node.js', level: 'Intermediate' },
   ],
 
   availableSkills: [
-    { id: 'typescript', name: 'TypeScript', category: 'Frontend' },
-    { id: 'postgresql', name: 'PostgreSQL', category: 'Backend' },
-    { id: 'tailwind-css', name: 'Tailwind CSS', category: 'Frontend' },
-    { id: 'graphql', name: 'GraphQL', category: 'Backend' },
-    { id: 'devops', name: 'DevOps', category: 'Infrastructure' },
-    { id: 'branding', name: 'Branding', category: 'Design' },
-    { id: 'machine-learning', name: 'Machine Learning', category: 'Data' },
-    { id: 'nextjs', name: 'Next.js', category: 'Frontend' },
   ],
 
   // Add Skill modal state.

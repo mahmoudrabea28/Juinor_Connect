@@ -3,8 +3,8 @@
     <div class="flex items-center gap-5">
       <div class="relative shrink-0">
         <img
-          :src="profileStore.profile.avatar"
-          :alt="profileStore.profile.name"
+          :src="profile.avatar"
+          :alt="profile.name"
           class="w-20 h-20 rounded-full object-cover bg-gray-200"
         />
         <div class="absolute bottom-0 right-0 w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-white">
@@ -17,13 +17,13 @@
 
       <div>
         <div class="flex items-center gap-3 flex-wrap">
-          <h2 class="text-2xl font-serif text-gray-900">{{ profileStore.profile.name }}</h2>
+          <h2 class="text-2xl font-serif text-gray-900">{{ profile.name }}</h2>
           <span class="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
-            {{ profileStore.profile.headline }}
+            {{profile.headline }}
           </span>
         </div>
         <p class="text-gray-500 text-[14px] mt-1.5 max-w-md leading-relaxed">
-          {{ profileStore.profile.bio }}
+          {{ profile.bio }}
         </p>
       </div>
     </div>
@@ -42,9 +42,41 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { profileStore } from '../../state/profileStore'
-import EditProfileModal from './EditProfileModal.vue'
+import { ref, onMounted } from "vue";
+import { getOnboardingProfile } from "../../services/api";
+import EditProfileModal from "./EditProfileModal.vue";
 
-const isModalOpen = ref(false)
+const isModalOpen = ref(false);
+
+const profile = ref({
+  name: "",
+  headline: "",
+  bio: "",
+  avatar: "/default-avatar.png",
+});
+
+const fetchProfile = async () => {
+  try {
+    const data = await getOnboardingProfile();
+
+    profile.value = {
+      name: data.profile?.fullName || "",
+      headline: data.profile?.currentRole || "",
+      bio: data.profile?.shortBio || "",
+      avatar: "/default-avatar.png",
+    };
+  } catch (error) {
+    console.error("Error loading profile:", error);
+  }
+};
+onMounted(() => {
+  fetchProfile();
+
+  window.addEventListener(
+    "profile-updated",
+    fetchProfile
+  );
+});
+
+
 </script>

@@ -109,7 +109,8 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, onMounted } from 'vue'
+import { getOnboardingProfile, updatePersonalInfo } from '../../services/api'
 import { profileStore } from '../../state/profileStore'
 
 // Local draft, seeded from whatever is currently saved in the store.
@@ -117,12 +118,54 @@ import { profileStore } from '../../state/profileStore'
 // is pressed, which is what makes "Discard restores previous values"
 // work — it just copies the saved values back over the draft.
 const form = reactive({ ...profileStore.personalInfo })
+const loadProfile = async () => {
+  try {
+    const data = await getOnboardingProfile()
 
-function handleSave() {
-  profileStore.savePersonalInfo({ ...form })
+    Object.assign(form, {
+      fullName: data.profile?.fullName || '',
+      role: data.profile?.currentRole || '',
+      bio: data.profile?.shortBio || '',
+    })
+  } catch (err) {
+    console.error(err)
+  }
 }
 
-function handleDiscard() {
-  Object.assign(form, profileStore.personalInfo)
+onMounted(loadProfile)
+const handleSave = async () => {
+  try {
+    const payload = {
+      fullName: form.fullName,
+      currentRole: form.role,
+      shortBio: form.bio,
+    }
+
+    if (form.github?.trim()) {
+      payload.github = form.github
+    }
+
+    if (form.linkedin?.trim()) {
+      payload.linkedin = form.linkedin
+    }
+
+    if (form.location?.trim()) {
+      payload.location = form.location
+    }
+
+    await updatePersonalInfo(payload)
+
+    window.dispatchEvent(
+      new CustomEvent('profile-updated')
+    )
+
+    alert('Profile updated successfully')
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const handleDiscard = () => {
+  loadProfile()
 }
 </script>

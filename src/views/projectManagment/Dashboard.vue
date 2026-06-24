@@ -5,6 +5,7 @@ import Navbar from '../../components/Navbar.vue';
 const router = useRouter()
 import { getMyProjects } from '../../services/api' 
 import { onMounted } from 'vue'
+import LoadingScreen from '../../components/LoadingScreen.vue'
 // ─── Mock Data (swap these refs for API calls later) ──────────────────────────
 
 const stats = computed(() => [
@@ -232,7 +233,21 @@ watch(
     <Navbar />
 
     <!-- ── PAGE BODY ──────────────────────────────────────────────────────── -->
-    <main class="px-main-margin-x py-main-margin-y space-y-gap-custom">
+   <LoadingScreen :visible="loadingProjects" />
+
+<div v-if="loadingProjects"></div>
+
+<div
+  v-else-if="projectsError"
+  class="flex items-center justify-center min-h-[60vh] text-red-500"
+>
+  {{ projectsError }}
+</div>
+
+<main
+  v-else
+  class="px-main-margin-x py-main-margin-y space-y-gap-custom"
+>
 
       <!-- ── HEADER GREETING ───────────────────────────────────────────── -->
       <div class="flex items-end justify-between">

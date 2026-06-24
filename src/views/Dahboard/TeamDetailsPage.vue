@@ -1,7 +1,8 @@
 <template>
   <div>
     <Navbar />
-    <div v-if="loading" class="td-state">Loading team details...</div>
+    <LoadingScreen :visible="loading" />
+    <div v-if="loading" style="display:none"></div>
     <div v-else-if="error" class="td-state td-err">{{ error }}</div>
 
     <div v-else-if="project" class="td-page">
@@ -64,6 +65,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getProjectById, joinProject, leaveProject, checkStatus } from '../../services/api'
 import Navbar from '../../components/Navbar.vue'
+import LoadingScreen from '../../components/LoadingScreen.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -13,8 +13,12 @@
           :key="link.label"
           :to="link.path"
           class="navbar__link"
-          :class="{ 'navbar__link--active': activeLink === link.label }"
-          @click="activeLink = link.label"
+          :class="{
+  'navbar__link--active':
+    link.path === '/'
+      ? route.path === '/'
+      : route.path.startsWith(link.path)
+}"
         >
           {{ link.label }}
         </router-link>
@@ -53,15 +57,18 @@
         </svg>
       </button>
       <div class="w-px h-8 bg-gray-200"></div>
-     <div class="w-9 h-9 rounded-full border border-indigo-300 flex items-center justify-center text-indigo-500">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-          </svg>
-        </div>
-      <p class="text-sm font-semibold text-gray-900 m-0">
-        {{ user?.name }}
-      </p>
+     <router-link to="/profile" class="navbar__profile">
+  <div class="w-9 h-9 rounded-full border border-indigo-300 flex items-center justify-center text-indigo-500">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+    </svg>
+  </div>
+
+  <p class="text-sm font-semibold text-gray-900 m-0">
+    {{ user?.name }}
+  </p>
+</router-link>
       
         <button class="navbar__logout" @click="handleLogout">
       Logout
@@ -112,31 +119,12 @@ const syncAuth = async () => {
    NAV LINKS
 ----------------------------*/
 const links = [
-  { label: 'Home', path: '/' },
+  { label: 'Home', path: '/Home' },
   { label: 'Teams', path: '/browse-teams' },
   { label: 'Projects', path: '/projects' },
   { label: 'AI Mentor', path: '/AI_Mentor' },
   { label: 'Help center', path: '/help-center' },
 ]
-
-const activeLink = ref('Home')
-
-watch(
-  () => route.path,
-  (newPath) => {
-    const currentLink = links.find(
-      (link) =>
-        newPath === link.path ||
-        newPath.startsWith(link.path + '/')
-    )
-
-    if (currentLink) {
-      activeLink.value = currentLink.label
-    }
-  },
-  { immediate: true }
-)
-
 /* ---------------------------
    LOGOUT
 ----------------------------*/
@@ -200,6 +188,13 @@ window.addEventListener('storage', syncAuth)
   background: #eef4ff;
   padding: 8px;
   border-radius: 50%;
+}
+.navbar__profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  cursor: pointer;
 }
 .navbar {
   position: sticky;
