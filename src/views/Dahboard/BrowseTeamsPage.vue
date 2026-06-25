@@ -109,7 +109,7 @@ const otherProjects = computed(() => filteredProjects.value.slice(1))
 </script>
 
 <style scoped>
-.bt-page{max-width:1200px;margin:0 auto;padding:32px 40px 60px}
+.bt-page{width:min(1280px, 100% - 48px);margin:0 auto;padding:32px 0 60px}
 
 .bt-header{display:flex;gap:24px;margin-bottom:24px;flex-wrap:wrap}
 .bt-left{flex:0 0 480px}
@@ -155,6 +155,6 @@ const otherProjects = computed(() => filteredProjects.value.slice(1))
   .bt-header{flex-direction:column}.bt-left{flex:none}
   .bt-top{flex-direction:column}.bt-top-right{width:100%}
   .bt-grid{grid-template-columns:1fr}
-  .bt-page{padding:16px}
+  .bt-page{width:auto;padding:16px}
 }
 </style>

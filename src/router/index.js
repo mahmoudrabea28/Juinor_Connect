@@ -58,6 +58,7 @@ const routes = [
 
   /* ================= AUTH ================= */
   { path: '/register', component: register },
+  { path: '/login', component: register },
   { path: '/forgot_password', component: forgot_password },
   { path: '/otp', component: OTP },
   { path: '/reset_password', component: resetpassword },
@@ -143,13 +144,24 @@ const router = createRouter({
     return { top: 0, behavior: 'smooth' }
   }
 })
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
+import { authStore } from '../state/authStore.js'
 
-  if (to.meta.requiresAuth && !token) {
-    next('/register')
-  } else {
+router.beforeEach(async (to, from, next) => {
+  if (!to.meta.requiresAuth) {
     next()
+    return
+  }
+
+  // Re-validate with the server for protected routes so an expired session
+  // is detected on navigation (not just trusted from the in-memory cache).
+  await authStore.ensure({ force: true })
+
+  if (authStore.isLoggedIn) {
+    next()
+  } else {
+    // Session is gone → send them Home (logged-out landing) instead of
+    // straight to the register screen.
+    next('/Home')
   }
 })
 export default router

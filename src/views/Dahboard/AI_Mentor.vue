@@ -219,11 +219,19 @@
 
       </div>
     </div>
+
+    <ClearChatModal
+      v-if="showClearChatModal"
+      :loading="clearingChat"
+      @confirm="confirmClearChat"
+      @cancel="cancelClearChat"
+    />
 </template>
 
 <script>
 import Navbar from '../../components/Navbar.vue'; 
 import LoadingScreen from '../../components/LoadingScreen.vue';
+import ClearChatModal from '../../components/profile/ClearChatModal.vue';
 import { mentorStore } from '../../state/mentorStore.js';
 import { 
   getMyProjects, generateTasks, getProjectTasks, 
@@ -234,7 +242,7 @@ import {
 
 export default {
   name: 'AiMentor',
-  components: { Navbar, LoadingScreen },
+  components: { Navbar, LoadingScreen, ClearChatModal },
   data() {
     return {
       // Projects & Tasks — synced with mentorStore
@@ -247,6 +255,8 @@ export default {
       typing: false,
       pendingImage: null,
       pendingFile: null,
+      showClearChatModal: false,
+      clearingChat: false,
 
       // Submissions
       submissions: [],
@@ -474,9 +484,16 @@ export default {
     clearFile() { this.pendingFile = null; },
 
     refreshChat() { if (this.selectedTaskId) this.selectTask(this.tasks.findIndex(t => t._id === this.selectedTaskId)); },
-    async clearChatHistory() {
+    clearChatHistory() {
       if (!this.selectedProjectId || !this.selectedTaskId) return;
-      if (!confirm('Clear chat history for this task? This cannot be undone.')) return;
+      this.showClearChatModal = true;
+    },
+    cancelClearChat() {
+      this.showClearChatModal = false;
+    },
+    async confirmClearChat() {
+      if (!this.selectedProjectId || !this.selectedTaskId) return;
+      this.clearingChat = true;
       try {
         await deleteTaskChat(this.selectedProjectId, this.selectedTaskId);
         this.chatMessages = [];
@@ -490,6 +507,9 @@ export default {
       } catch (e) {
         this.typing = false;
         console.error(e);
+      } finally {
+        this.clearingChat = false;
+        this.showClearChatModal = false;
       }
     },
     scrollChat() { const el = this.$refs.chatMessages; if (el) el.scrollTop = el.scrollHeight; },
@@ -547,10 +567,63 @@ export default {
   width: 100%;
 }
 .content-container { padding: 32px; max-width: 1400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
-.page-banner { background-color: #ffffff; border-radius: 16px; padding: 24px; position: relative; overflow: hidden; }
-.page-banner span { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #131927; font-weight: 600; }
-.page-banner h1 { font-size: 24px; color: #131927; margin: 8px 0; font-weight: 700; }
-.page-banner p { color: #131927; font-size: 14px; }
+.page-banner {
+  background-color: #ffffff;
+  background-image: url(../../assets/images/Hero\ section.png);
+  background-repeat: no-repeat;
+  background-size: 85%;
+  background-position: center right;
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.page-banner::before {
+  content: '';
+  position: absolute;
+  top: -30px;
+  left: -30px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(37, 99, 235, 0.25);
+  border-radius: 50%;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+}
+.page-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -50px;
+  right: -30px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 170, 0, 0.3);
+  border-radius: 50%;
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-banner span {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #131927;
+  font-weight: 600;
+}
+
+.page-banner h1 {
+  font-size: 24px;
+  color: #131927;
+  margin: 8px 0;
+  font-weight: 700;
+}
+
+.page-banner p {
+  color: #131927;
+  font-size: 14px;
+}
 
 .mentor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 @media (max-width: 992px) { .mentor-grid { grid-template-columns: 1fr; } }

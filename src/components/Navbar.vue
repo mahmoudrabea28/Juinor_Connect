@@ -26,7 +26,7 @@
 
       <div class="navbar__actions">
          <template v-if="!isLoggedIn">
-    <router-link to="/register" class="navbar__signin">Sign in</router-link>
+    <router-link to="/login" class="navbar__signin">Sign in</router-link>
 
     <button class="navbar__cta" type="button" @click="$router.push('/register')">
       <span>Join the crew</span>
@@ -58,8 +58,15 @@
       </button>
       <div class="w-px h-8 bg-gray-200"></div>
      <router-link to="/profile" class="navbar__profile">
-  <div class="w-9 h-9 rounded-full border border-indigo-300 flex items-center justify-center text-indigo-500">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+  <div class="w-9 h-9 rounded-full border border-indigo-300 overflow-hidden flex items-center justify-center text-indigo-500 bg-white">
+    <img
+      v-if="avatarUrl"
+      :src="avatarUrl"
+      alt="Profile"
+      class="w-full h-full object-cover"
+      @error="onAvatarError"
+    />
+    <svg v-else width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
       <circle cx="12" cy="8" r="4" />
       <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
     </svg>
@@ -81,39 +88,39 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getMe, logout } from '../services/auth'
+import { authStore } from '../state/authStore.js'
+import { profileStore } from '../state/profileStore.js'
 
 const router = useRouter()
 const route = useRoute()
 
-const user = ref(null)
-const isLoggedIn = ref(false)
+// Read straight from the shared store — stays in sync everywhere,
+// no per-navigation server requests.
+const user = computed(() => authStore.user)
+const isLoggedIn = computed(() => authStore.isLoggedIn)
+
+// Prefer the profile store's avatar (updated instantly after upload),
+// then the auth user's avatar from the server.
+const rawAvatar = computed(
+  () => profileStore.profile.avatar || authStore.user?.avatar || ''
+)
+
+// If the current avatar URL fails to load, fall back to the icon.
+const avatarFailed = ref(false)
+watch(rawAvatar, () => { avatarFailed.value = false })
+const avatarUrl = computed(() => (avatarFailed.value ? '' : rawAvatar.value))
+
+function onAvatarError() {
+  avatarFailed.value = true
+}
 
 /* ---------------------------
-   AUTH SYNC 
+   AUTH SYNC
 ----------------------------*/
-const syncAuth = async () => {
-  const token = localStorage.getItem('token')
-
-  isLoggedIn.value = !!token
-
-  if (!token) {
-    user.value = null
-    return
-  }
-
-  try {
-    const res = await getMe()
-    user.value = res.user
-  } catch (err) {
-    console.log(err)
-    user.value = null
-    localStorage.removeItem('token')
-    isLoggedIn.value = false
-  }
-}
+const syncAuth = () => authStore.ensure({ force: true })
+const syncProfile = () => profileStore.loadProfile({ force: true })
 
 /* ---------------------------
    NAV LINKS
@@ -129,20 +136,8 @@ const links = [
    LOGOUT
 ----------------------------*/
 const handleLogout = async () => {
-  try {
-    await logout()
-  } catch (err) {
-    console.error(err)
-  }
-
-  localStorage.removeItem('token')
-  localStorage.removeItem('user')
-
-  user.value = null
-  isLoggedIn.value = false
-
+  await authStore.logout()
   window.dispatchEvent(new Event('user-updated'))
-
   router.push('/')
 }
 
@@ -150,11 +145,19 @@ const handleLogout = async () => {
    INIT + EVENTS
 ----------------------------*/
 onMounted(() => {
-  syncAuth()
+  authStore.ensure()
+  // Load the profile so the avatar is available in the nav.
+  profileStore.loadProfile()
 })
 
 window.addEventListener('user-updated', syncAuth)
 window.addEventListener('storage', syncAuth)
+// When the avatar/profile changes anywhere, refresh it in the nav.
+window.addEventListener('profile-updated', syncProfile)
+
+onBeforeUnmount(() => {
+  window.removeEventListener('profile-updated', syncProfile)
+})
 </script>
 <style scoped>
 .navbar__logout {

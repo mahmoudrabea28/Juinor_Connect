@@ -4,17 +4,27 @@ import { reactive } from 'vue'
 // Any component that imports `profileStore` shares this same
 // reactive object, so updates show up everywhere instantly.
 
-const DEFAULT_AVATAR = 'https://i.pravatar.cc/150?img=47'
+// No real photo here — an empty string means "no avatar set", and the
+// UI falls back to a neutral icon/initials. Using a shared stock photo
+// (e.g. pravatar) made every user look like they had the same picture.
+const DEFAULT_AVATAR = ''
 
 export const profileStore = reactive({
+  // Starts blank. It gets filled from /api/profile for the logged-in
+  // user. We intentionally do NOT seed fake data ("Emily Davis", etc.)
+  // because that placeholder would leak onto real accounts whose fields
+  // come back empty.
   profile: {
-    name: 'Emily Davis',
-    headline: 'Frontend Developer · Student',
-    bio: 'Passionate about building real products and learning through collaboration. Currently exploring React ecosystems and UX patterns.',
+    name: '',
+    headline: '',
+    bio: '',
     avatar: DEFAULT_AVATAR,
   },
 
   defaultAvatar: DEFAULT_AVATAR,
+
+  // AI-generated strength badges (filled from /api/profile).
+  highlights: [],
 
   // ── Loading state ─────────────────────────────────────────────────
   // `true` until loadProfile() finishes the first fetch from the DB.
@@ -32,11 +42,13 @@ export const profileStore = reactive({
       const data = await getProfile()
       const p = data.profile || {}
 
-      // Profile card
+      // Profile card — the backend response is authoritative. We do NOT
+      // fall back to the previous value in the store, otherwise one user's
+      // name/bio could linger after switching accounts. Empty means empty.
       Object.assign(this.profile, {
-        name: p.name ?? this.profile.name,
-        headline: p.headline ?? this.profile.headline,
-        bio: p.bio ?? this.profile.bio,
+        name: p.name || '',
+        headline: p.headline || '',
+        bio: p.bio || '',
         avatar: p.avatar || this.defaultAvatar,
       })
 
@@ -47,6 +59,9 @@ export const profileStore = reactive({
           gradient: i === 0,
         }))
       }
+
+      // AI-generated strength badges (from the profile-gen feature).
+      this.highlights = Array.isArray(p.highlights) ? p.highlights : []
 
       // Personal Information form
       if (p.personalInfo) {
@@ -73,19 +88,32 @@ export const profileStore = reactive({
     Object.assign(this.profile, updates)
   },
 
-  // Restore the avatar to the default placeholder
+  // Restore the avatar to the neutral placeholder
   // (used by the "Remove" action in the Edit Profile modal).
   resetProfile() {
     this.profile.avatar = this.defaultAvatar
   },
 
+  // Wipe the WHOLE store back to a blank, logged-out state. Call this on
+  // logout (and before loading a different account) so one user's data
+  // can never show up for another user.
+  reset() {
+    Object.assign(this.profile, {
+      name: '',
+      headline: '',
+      bio: '',
+      avatar: this.defaultAvatar,
+    })
+    this.skills = []
+    this.highlights = []
+    this.resetPersonalInfo()
+    this.loaded = false
+    this.loading = false
+  },
+
   // ── My Skills (Profile page) ──────────────────────────────────────
-  // Seed with the three chips shown in the original screenshot.
-  skills: [
-    { label: 'Figma', gradient: true },
-    { label: 'HTML', gradient: false },
-    { label: 'CSS', gradient: false },
-  ],
+  // Starts empty; filled from /api/profile for the current user.
+  skills: [],
 
   // Modal state
   skillModalOpen: false,

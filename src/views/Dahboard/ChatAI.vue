@@ -113,11 +113,18 @@
         </div>
       </div>
     </div>
+    <ClearChatModal
+      v-if="showClearChatModal"
+      :loading="clearingChat"
+      @confirm="confirmClearChat"
+      @cancel="cancelClearChat"
+    />
   </DashboardLayout>
 </template>
 
 <script>
 import DashboardLayout from '../../components/Dashboard_Navbar.vue'; 
+import ClearChatModal from '../../components/profile/ClearChatModal.vue';
 import { mentorStore } from '../../state/mentorStore.js';
 import { 
   getMyProjects, generateTasks, getProjectTasks, 
@@ -127,7 +134,7 @@ import {
 
 export default {
   name: 'FullscreenAiMentor',
-  components: { DashboardLayout },
+  components: { DashboardLayout, ClearChatModal },
   data() {
     return {
       projects: [],
@@ -137,6 +144,8 @@ export default {
       pendingImage: null,
       pendingFile: null,
       submitting: false,
+      showClearChatModal: false,
+      clearingChat: false,
       store: mentorStore,
     };
   },
@@ -259,9 +268,14 @@ export default {
       this.submitting = false;
       this.$nextTick(() => this.scrollChat());
     },
-    async clearChatHistory() {
+    clearChatHistory() {
       if (!this.selectedProjectId || !this.selectedTaskId) return;
-      if (!confirm('Clear chat history for this task?')) return;
+      this.showClearChatModal = true;
+    },
+    cancelClearChat() { this.showClearChatModal = false; },
+    async confirmClearChat() {
+      if (!this.selectedProjectId || !this.selectedTaskId) return;
+      this.clearingChat = true;
       try {
         await deleteTaskChat(this.selectedProjectId, this.selectedTaskId);
         this.chatMessages = [];
@@ -270,6 +284,7 @@ export default {
         this.typing = false;
         if (d.reply) this.chatMessages.push({ role: 'ai', content: d.reply, timestamp: new Date() });
       } catch(e) { this.typing = false; }
+      finally { this.clearingChat = false; this.showClearChatModal = false; }
     },
 
     // File handlers

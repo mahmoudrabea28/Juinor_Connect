@@ -28,10 +28,20 @@
         <div class="flex items-center gap-4 mb-6">
           <div class="relative shrink-0">
             <img
+              v-if="form.avatar"
               :src="form.avatar"
               alt="Avatar preview"
               class="w-16 h-16 rounded-full object-cover bg-gray-200"
             />
+            <div
+              v-else
+              class="w-16 h-16 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-400"
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
+              </svg>
+            </div>
             <div class="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center border-2 border-white">
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9a2 2 0 0 1 2-2h2l1.5-2h7L17 7h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" />
@@ -108,7 +118,7 @@
 <script setup>
 import { reactive, ref, onBeforeUnmount } from 'vue'
 import { profileStore } from '../../state/profileStore'
-import { updatePersonalInfo } from '../../services/api'
+import { updateProfileCard, uploadAvatar } from '../../services/api'
 const emit = defineEmits(['close'])
 
 const fileInput = ref(null)
@@ -129,6 +139,8 @@ const form = reactive({
 // committed to the store yet, so it can be released if the user
 // cancels instead of saving.
 let pendingObjectUrl = null
+// Holds the picked image as a base64 data URL, ready to upload on save.
+let pendingBase64 = null
 
 function triggerFilePicker() {
   fileInput.value?.click()
@@ -138,10 +150,21 @@ function onFileChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
 
+  // Show an instant local preview...
   if (pendingObjectUrl) URL.revokeObjectURL(pendingObjectUrl)
   const url = URL.createObjectURL(file)
   pendingObjectUrl = url
   form.avatar = url
+
+  // ...and read the file as base64 so we can upload it on save.
+  const reader = new FileReader()
+  reader.onload = () => {
+    pendingBase64 = reader.result // data:image/...;base64,xxxx
+  }
+  reader.onerror = () => {
+    pendingBase64 = null
+  }
+  reader.readAsDataURL(file)
 }
 
 function removePhoto() {
@@ -149,28 +172,48 @@ function removePhoto() {
     URL.revokeObjectURL(pendingObjectUrl)
     pendingObjectUrl = null
   }
+  pendingBase64 = null
   form.avatar = profileStore.defaultAvatar
 }
 const handleSave = async () => {
   try {
-    await updatePersonalInfo({
-      fullName: form.name,
-      currentRole: form.headline,
-      shortBio: form.bio,
+    let avatarUrl = form.avatar
+
+    // If the user picked a new image, upload it first and use the
+    // hosted Cloudinary URL the server returns. This is the fix for
+    // the avatar not persisting: a local blob URL never reached the DB.
+    if (pendingBase64) {
+      const res = await uploadAvatar(pendingBase64)
+      avatarUrl = res.avatar || avatarUrl
+    }
+
+    // Persist the profile card (name / headline / bio / avatar URL).
+    await updateProfileCard({
+      name: form.name,
+      headline: form.headline,
+      bio: form.bio,
+      avatar: avatarUrl,
     })
 
+    // Reflect changes in the shared store so the page updates instantly.
     profileStore.updateProfile({
       name: form.name,
       headline: form.headline,
       bio: form.bio,
-      avatar: form.avatar,
+      avatar: avatarUrl,
     })
 
-    window.dispatchEvent(
-      new CustomEvent('profile-updated')
-    )
+    window.dispatchEvent(new CustomEvent('profile-updated'))
+    // الاسم والصورة اتزامنوا على الـ User كمان في الباك إند، فنبلّغ
+    // الـ Navbar (اللي بيقرأ الاسم من authStore) إنه يحدّث نفسه.
+    window.dispatchEvent(new CustomEvent('user-updated'))
 
-    pendingObjectUrl = null
+    // The hosted URL is now the source of truth; drop the local blob.
+    if (pendingObjectUrl) {
+      URL.revokeObjectURL(pendingObjectUrl)
+      pendingObjectUrl = null
+    }
+    pendingBase64 = null
     emit('close')
   } catch (err) {
     console.error(err)

@@ -17,6 +17,25 @@ export async function api(path, { method = "GET", body } = {}) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
+      // 401 = the server rejected us because the session expired or we're
+      // not logged in. Broadcast it so the app can drop the cached "logged
+      // in" state and send the user back to a logged-out view. We skip the
+      // auth endpoints themselves (a failed /me or /login shouldn't trigger
+      // a redirect loop — those callers handle their own result).
+      const isAuthCheck =
+        path.startsWith("/api/auth/me") ||
+        path.startsWith("/api/auth/status") ||
+        path.startsWith("/api/auth/login") ||
+        path.startsWith("/api/auth/register") ||
+        path.startsWith("/api/auth/logout");
+
+      if (res.status === 401 && !isAuthCheck) {
+        try {
+          localStorage.removeItem("user");
+        } catch (e) {}
+        window.dispatchEvent(new CustomEvent("session-expired"));
+      }
+
       throw new Error(data.message || "An unexpected error occurred.");
     }
 
@@ -68,6 +87,32 @@ export async function logout() {
 }
 /*----- Profile (Profile page data: card + skills + personalInfo + portfolio) -----*/
 export const getProfile = () => api("/api/profile");
+
+// Update the top profile card (name / headline / bio / avatar URL).
+export const updateProfileCard = (data) =>
+  api("/api/profile/card", { method: "PUT", body: data });
+
+// Update the Personal Information form (note: backend route is
+// /api/profile/personal-info, distinct from the onboarding step).
+export const updateProfilePersonalInfo = (data) =>
+  api("/api/profile/personal-info", { method: "PUT", body: data });
+
+// Replace the skills array.
+export const updateProfileSkills = (skills) =>
+  api("/api/profile/skills", { method: "PUT", body: { skills } });
+
+// Portfolio CRUD.
+export const addPortfolioProject = (data) =>
+  api("/api/profile/portfolio", { method: "POST", body: data });
+export const updatePortfolioProject = (id, data) =>
+  api(`/api/profile/portfolio/${id}`, { method: "PUT", body: data });
+export const deletePortfolioProject = (id) =>
+  api(`/api/profile/portfolio/${id}`, { method: "DELETE" });
+
+// Upload an avatar image as base64 — backend pushes it to Cloudinary
+// and returns the hosted URL.
+export const uploadAvatar = (base64) =>
+  api("/api/profile/avatar", { method: "POST", body: { base64 } });
 
 /*----------------------*/
 // دوال عامة لجلب البروفايل والخيارات

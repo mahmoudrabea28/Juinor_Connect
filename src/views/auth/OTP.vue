@@ -52,7 +52,7 @@
         </button>
 
         <div class="back-link">
-          <router-link to="/register">← Back to Login</router-link>
+          <router-link to="/login">← Back to Login</router-link>
         </div>
       </div>
     </div>

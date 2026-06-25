@@ -17,44 +17,46 @@
           <h3>Required Stack</h3>
           <div class="td-chips"><span class="td-chip" v-for="s in project.requiredSkills" :key="s">{{ s }}</span></div>
         </div>
-      </div>
 
-      <div class="td-right">
-        <h2 class="td-rh">Vibe check</h2>
-        <div class="td-vibes">
-          <div class="td-vibe" v-for="v in vibes" :key="v.t">
-            <strong>{{ v.t }}</strong><span>{{ v.d }}</span>
+        <div class="td-card td-vibe-card">
+          <h2 class="td-rh">Vibe check</h2>
+          <div class="td-vibes">
+            <div class="td-vibe" v-for="v in vibes" :key="v.t">
+              <strong>{{ v.t }}</strong><span>{{ v.d }}</span>
+            </div>
           </div>
         </div>
 
-        <div class="td-roster-head">
-          <h2 class="td-rh">The Roster</h2>
-          <span class="td-roster-badge">{{ project.members?.length||0 }}/4</span>
-        </div>
-        <div class="td-roster">
-          <div class="td-member" v-for="m in project.members" :key="m._id">
-            <div class="td-mav">{{ (m.user?.name||'?')[0]?.toUpperCase() }}</div>
-            <strong>{{ m.user?.name||'Member' }}</strong>
-            <span>{{ m.role||'Team member' }}</span>
+        <div class="td-card td-roster-card">
+          <div class="td-roster-head">
+            <h2 class="td-rh">The Roster</h2>
+            <span class="td-roster-badge">{{ project.members?.length||0 }}/4</span>
           </div>
-          <div class="td-member td-open" v-for="i in openSlots" :key="'o'+i">
-            <div class="td-mav td-mav-empty">+</div>
-            <strong>Open Role</strong>
-            <span>Waiting for you</span>
+          <div class="td-roster">
+            <div class="td-member" v-for="m in project.members" :key="m._id">
+              <div class="td-mav">{{ (m.user?.name||'?')[0]?.toUpperCase() }}</div>
+              <strong>{{ m.user?.name||'Member' }}</strong>
+              <span>{{ m.role||'Team member' }}</span>
+            </div>
+            <div class="td-member td-open" v-for="i in openSlots" :key="'o'+i">
+              <div class="td-mav td-mav-empty">+</div>
+              <strong>Open Role</strong>
+              <span>Waiting for you</span>
+            </div>
           </div>
+
+          <hr style="border:none;border-top:1px solid #E5E7EA;margin:12px 0">
+
+          <button v-if="!isMember&&!project.isFull" class="td-join" :disabled="joining" @click="handleJoin">
+            {{ joining?'Joining...':'Join Team →' }}
+          </button>
+          <button v-else-if="isMember" class="td-leave" :disabled="leaving" @click="handleLeave">
+            {{ leaving?'Leaving...':'Leave team' }}
+          </button>
+          <p v-else class="td-full">Team is full (4/4)</p>
+
+          <router-link to="/browse-teams" class="td-back">← Back to teams</router-link>
         </div>
-
-        <hr style="border:none;border-top:1px solid #E5E7EA;margin:12px 0">
-
-        <button v-if="!isMember&&!project.isFull" class="td-join" :disabled="joining" @click="handleJoin">
-          {{ joining?'Joining...':'Join Team →' }}
-        </button>
-        <button v-else-if="isMember" class="td-leave" :disabled="leaving" @click="handleLeave">
-          {{ leaving?'Leaving...':'Leave team' }}
-        </button>
-        <p v-else class="td-full">Team is full (4/4)</p>
-
-        <router-link to="/browse-teams" class="td-back">← Back to teams</router-link>
       </div>
     </div>
   </div>
@@ -116,9 +118,11 @@ async function handleLeave(){
 </script>
 
 <style scoped>
-.td-page{display:flex;min-height:calc(100vh - 80px)}
-.td-left{flex:1;padding:40px 60px}
-.td-right{width:420px;flex-shrink:0;background:#FAFBFF;padding:32px;display:flex;flex-direction:column;gap:14px}
+.td-page{display:block;width:min(1280px, 100% - 48px);margin-inline:auto}
+.td-left{padding:40px 0;display:flex;flex-direction:column}
+.td-vibe-card{margin-top:32px}
+.td-roster-card{margin-top:24px}
+.td-card{background:#FAFBFF;border:1px solid #EEF0F6;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px}
 
 .td-tags{display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .td-title{font-size:36px;font-weight:700;line-height:44px;margin:0 0 12px}
@@ -130,14 +134,14 @@ async function handleLeave(){
 .td-chip-grey{background:#f1f5f9;border-color:#E5E7EA;color:#6D717F;text-transform:none}
 
 .td-rh{font-size:24px;font-weight:700;margin:0}
-.td-vibes{display:flex;flex-direction:column;gap:12px}
-.td-vibe{background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:4px}
+.td-vibes{display:flex;flex-direction:row;gap:12px;flex-wrap:wrap}
+.td-vibe{flex:1;min-width:200px;background:#fff;border-radius:12px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.04);display:flex;flex-direction:column;gap:4px}
 .td-vibe strong{font-size:15px}
 .td-vibe span{font-size:13px;color:#6D717F}
 
 .td-roster-head{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
 .td-roster-badge{font-size:12px;color:#4E61F6;background:#EDEFFE;border:1px solid #4E61F6;padding:2px 10px;border-radius:12px}
-.td-roster{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.td-roster{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .td-member{display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px;border-radius:12px;background:#fff;border:1.5px solid #E5E7EA;text-align:center}
 .td-member strong{font-size:13px}
 .td-member span{font-size:12px;color:#9EA2AE}
@@ -155,5 +159,9 @@ async function handleLeave(){
 .td-state{text-align:center;padding:80px 0;font-size:15px;color:#9EA2AE}
 .td-err{color:#ef4444}
 
-@media(max-width:900px){.td-page{flex-direction:column}.td-right{width:100%}.td-left{padding:24px 16px}}
+@media(max-width:900px){
+  .td-left{padding:24px 0}
+  .td-vibes{flex-direction:column}
+  .td-roster{grid-template-columns:1fr 1fr}
+}
 </style>

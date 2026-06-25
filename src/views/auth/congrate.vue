@@ -92,7 +92,7 @@ const handleBackToLogin = (event) => {
   addRipple(loginBtnRef.value, event)
 
   setTimeout(() => {
-    router.push('/register')
+    router.push('/login')
   }, 150)
 }
 

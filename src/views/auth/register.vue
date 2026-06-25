@@ -165,16 +165,31 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { login, register, loginWithGoogle, loginWithFacebook } from '../../services/auth.js'
+import { authStore } from '../../state/authStore.js'
 
 const router = useRouter()
+const route = useRoute()
 const loginImage = new URL('../../assets/images/Login Image.png', import.meta.url).href
 const signupImage = new URL('../../assets/images/Register.png', import.meta.url).href
 const fallbackImage = loginImage
 
-const isLoginMode = ref(true)
+// Which form shows first depends on how the user got here:
+//   /login    → Sign in   (navbar "Sign in")
+//   /register → Sign up   (navbar "Join the crew")
+// Anything else defaults to Sign in.
+const isLoginMode = ref(route.path !== '/register')
+
+// If the route changes while this component stays mounted (e.g. the user
+// clicks the other navbar button), switch the form to match.
+watch(
+  () => route.path,
+  (path) => {
+    isLoginMode.value = path !== '/register'
+  }
+)
 const loading = ref(false)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
@@ -228,8 +243,7 @@ const handleLogin = async (event) => {
   remember: loginForm.rememberMe
 })
 
-localStorage.setItem('user', JSON.stringify(res.user))
-localStorage.setItem('token', res.token)
+authStore.setUser(res?.user || null)
    window.dispatchEvent(new Event('user-updated'))
       router.push('/profile')
     } catch (error) { serverErrorMessage.value = error.message }
@@ -255,8 +269,7 @@ const handleSignup = async (event) => {
   remember: signupForm.rememberMe
 })
 
-localStorage.setItem('user', JSON.stringify(res.user))
-localStorage.setItem('token', res.token)
+authStore.setUser(res?.user || null)
  window.dispatchEvent(new Event('user-updated'))
       router.push('/ScreenPersonalInfo')
      
@@ -266,11 +279,15 @@ localStorage.setItem('token', res.token)
 }
 
 const toggleMode = () => {
-  isLoginMode.value = !isLoginMode.value
+  // Flip to the other form by navigating, so the URL and the visible form
+  // stay in sync. The route watcher above flips isLoginMode for us.
+  const goingToLogin = !isLoginMode.value
+  router.push(goingToLogin ? '/login' : '/register')
+
   serverErrorMessage.value = ''
   showPassword.value = false
   showConfirmPassword.value = false
-  if (isLoginMode.value) Object.assign(loginForm, { email: '', password: '', rememberMe: false })
+  if (goingToLogin) Object.assign(loginForm, { email: '', password: '', rememberMe: false })
   else Object.assign(signupForm, { fullname: '', email: '', password: '', confirmPassword: '', rememberMe: false })
   Object.keys(errors).forEach(key => errors[key] = '')
 }

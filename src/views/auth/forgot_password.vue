@@ -55,7 +55,7 @@
         </button>
 
         <div class="back-link">
-          Remember your password? <router-link to="/register">Login</router-link>
+          Remember your password? <router-link to="/login">Login</router-link>
         </div>
       </div>
     </div>
