@@ -1,11 +1,13 @@
 <template>
   <router-view />
+  <Toast />
 </template>
 
 <script setup>
 import { onMounted, onBeforeUnmount } from 'vue'
 import { useRouter } from 'vue-router'
 import { authStore } from './state/authStore.js'
+import Toast from './components/Toast.vue'
 
 const router = useRouter()
 

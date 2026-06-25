@@ -52,6 +52,7 @@
 
 <script>
 import { updatePersonalInfo, getOnboardingProfile } from "../../services/api";
+import { toast } from "../../state/toastStore";
 
 export default {
   data() {
@@ -68,7 +69,8 @@ export default {
       if (data && data.profile) {
         this.formData.fullName = data.profile.fullName || "";
         this.formData.currentRole = data.profile.currentRole || "";
-        this.formData.shortBio = data.profile.shortBio || "";
+        // النبذة بقت محفوظة في حقل bio الموحّد (مع دعم القديم shortBio).
+        this.formData.shortBio = data.profile.bio || data.profile.shortBio || "";
       }
     } catch (err) { console.error("Error loading profile:", err); }
   },
@@ -85,7 +87,7 @@ export default {
       try {
         await updatePersonalInfo(this.formData);
         this.$router.push("/ScreenSkills");
-      } catch (err) { alert(err.message); } finally { this.loading = false; }
+      } catch (err) { toast.error(err.message); } finally { this.loading = false; }
     }
   }
 };

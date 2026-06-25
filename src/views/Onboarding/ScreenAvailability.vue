@@ -63,6 +63,7 @@
 
 <script>
 import { updateAvailability, getOnboardingProfile } from "../../services/api";
+import { toast } from "../../state/toastStore";
 
 export default {
   data() {
@@ -99,7 +100,7 @@ export default {
     },
     async saveAvailability() {
       if (!this.selectedTime || this.selectedDays.length === 0) {
-        return alert("Please select time and days");
+        return toast.error("Please select time and days");
       }
       this.loading = true;
       try {
@@ -108,7 +109,7 @@ export default {
           preferredDays: this.selectedDays
         });
         this.$router.push("/Availability");
-      } catch (err) { alert(err.message); }
+      } catch (err) { toast.error(err.message); }
       finally { this.loading = false; }
     }
   }

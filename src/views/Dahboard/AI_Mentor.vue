@@ -22,7 +22,7 @@
               </div>
               <select v-model="selectedProjectId" @change="onProjectChange" class="project-select">
                 <option value="">-- Choose a project --</option>
-                <option v-for="p in projects" :key="p._id" :value="p._id">{{ p.title }}</option>
+                <option v-for="p in fullTeamProjects" :key="p._id" :value="p._id">{{ p.title }}</option>
               </select>
               <button v-if="selectedProjectId && !tasks.length" @click="generateProjectTasks" :disabled="loadingTasks" class="btn-generate">
                 <span class="material-symbols-outlined">bolt</span>
@@ -76,7 +76,7 @@
           </div>
 
           <!-- Chat -->
-          <div class="chat-container">
+          <div class="chat-container" :class="{ 'chat-fullscreen': chatFullscreen }">
             <div class="chat-header">
               <div class="chat-header-left">
                 <div class="ai-header-avatar">
@@ -88,9 +88,11 @@
                 </div>
               </div>
               <div class="chat-header-actions">
-                <router-link to="/chatAI">
-                  <span class="material-symbols-outlined icon">open_in_full</span>
-                </router-link>
+                <span
+                  class="material-symbols-outlined icon"
+                  @click="toggleChatFullscreen"
+                  :title="chatFullscreen ? 'Exit fullscreen' : 'Expand chat'"
+                >{{ chatFullscreen ? 'close_fullscreen' : 'open_in_full' }}</span>
                 <span class="material-symbols-outlined icon" @click="clearChatHistory" title="Clear chat history">restart_alt</span>
               </div>
             </div>
@@ -253,6 +255,7 @@ export default {
       // Chat
       chatInput: '',
       typing: false,
+      chatFullscreen: false, // يكبّر الشات داخل نفس الصفحة (مش صفحة منفصلة)
       pendingImage: null,
       pendingFile: null,
       showClearChatModal: false,
@@ -280,6 +283,14 @@ export default {
     };
   },
   computed: {
+    // المشاريع اللي الفريق فيها اكتمل (4 أعضاء) — status === "full".
+    // ساعتها بس تظهر في القائمة عشان يختارها ويكمّل شغل عليها.
+    // بنشيك على عدد الأعضاء كمان احتياطًا لو الـ status مش متحدّث.
+    fullTeamProjects() {
+      return (this.projects || []).filter(
+        (p) => p.status === 'full' || (p.members?.length || 0) >= 4
+      );
+    },
     selectedProjectId: {
       get() { return mentorStore.selectedProjectId; },
       set(v) { mentorStore.setProject(v); }
@@ -310,6 +321,17 @@ export default {
     this.pageLoading = false;
     this.loadSuggestions();
     this.loadRecommendations();
+
+    // اضغط Escape للخروج من وضع ملء الشاشة للشات.
+    this._onKeydown = (e) => {
+      if (e.key === 'Escape' && this.chatFullscreen) this.toggleChatFullscreen();
+    };
+    window.addEventListener('keydown', this._onKeydown);
+  },
+  beforeUnmount() {
+    // نظافة: نرجّع تمرير الصفحة ونشيل المستمع لو خرجنا والشات مكبّر.
+    document.body.style.overflow = '';
+    if (this._onKeydown) window.removeEventListener('keydown', this._onKeydown);
   },
   methods: {
     async loadProjects() {
@@ -484,6 +506,12 @@ export default {
     clearFile() { this.pendingFile = null; },
 
     refreshChat() { if (this.selectedTaskId) this.selectTask(this.tasks.findIndex(t => t._id === this.selectedTaskId)); },
+    // يكبّر/يصغّر الشات داخل نفس الصفحة بدل ما ينقل لصفحة منفصلة.
+    toggleChatFullscreen() {
+      this.chatFullscreen = !this.chatFullscreen;
+      // نمنع تمرير الصفحة ورا الشات وهو مكبّر.
+      document.body.style.overflow = this.chatFullscreen ? 'hidden' : '';
+    },
     clearChatHistory() {
       if (!this.selectedProjectId || !this.selectedTaskId) return;
       this.showClearChatModal = true;
@@ -660,7 +688,25 @@ export default {
 .loading-text { text-align: center; color: var(--text-muted); font-size: 13px; padding: 12px; }
 
 /* Chat */
-.chat-container { border: 1px solid var(--border-color); border-radius: 16px; background: #E7F5FF; display: flex; flex-direction: column; min-height: 500px; overflow: hidden; }
+.chat-container { border: 1px solid var(--border-color); border-radius: 16px; background: #E7F5FF; display: flex; flex-direction: column; min-height: 500px; overflow: hidden; transition: all 0.25s ease; }
+
+/* وضع ملء الشاشة: الشات ياخد الشاشة كلها في نفس الصفحة (overlay). */
+.chat-container.chat-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  border-radius: 0;
+  min-height: 100vh;
+  height: 100vh;
+  width: 100vw;
+  box-shadow: 0 0 0 100vmax rgba(15, 23, 42, 0.35);
+}
+.chat-container.chat-fullscreen .chat-messages {
+  flex: 1;
+}
+@media (max-width: 640px) {
+  .chat-container.chat-fullscreen { min-height: 100dvh; height: 100dvh; }
+}
 .chat-header { padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
 .chat-header-left { display: flex; align-items: center; gap: 12px; }
 .ai-header-avatar { width: 36px; height: 36px; background-color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; }

@@ -51,6 +51,7 @@
 
 <script>
 import { updateSkills, getOnboardingProfile } from "../../services/api";
+import { toast } from "../../state/toastStore";
 
 export default {
   data() {
@@ -83,7 +84,7 @@ export default {
     },
     async saveSkills() {
       if (this.selectedSkills.length < 3) {
-        alert("Please select at least 3 skills");
+        toast.error("Please select at least 3 skills");
         return;
       }
 
@@ -93,7 +94,7 @@ export default {
         await updateSkills(this.selectedSkills);
         this.$router.push("/ScreenInterests");
       } catch (err) {
-        alert(err.message || "Failed to save");
+        toast.error(err.message || "Failed to save");
       } finally {
         this.loading = false;
       }

@@ -150,6 +150,7 @@
 
 <script>
 import DashboardLayout from '../../components/Dashboard_Navbar.vue'; 
+import { toast } from "../../state/toastStore";
 
 export default {
   name: 'BrowseTeams',
@@ -235,7 +236,7 @@ export default {
       console.log('Opening project for:', team.name);
     },
     joinTeam(team) {
-      alert(`Request sent to join ${team.name}!`);
+      toast.success(`Request sent to join ${team.name}`);
     }
   }
 }

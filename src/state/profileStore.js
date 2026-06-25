@@ -34,58 +34,73 @@ export const profileStore = reactive({
 
   // Fetch the profile from the backend (GET /api/profile) and fill the
   // store. Pages await this and show <LoadingScreen> while it runs.
+  //
+  // Multiple components (Navbar + ProfilePage) and events (profile-updated,
+  // user-updated) can call this at almost the same moment. Without
+  // de-duplication each call does its own fetch and writes its own result,
+  // so the card visibly flips between values. We keep a single in-flight
+  // promise and let every caller await the same one.
+  _inflight: null,
+
   async loadProfile({ force = false } = {}) {
     if (this.loaded && !force) return
+    if (this._inflight) return this._inflight
+
     this.loading = true
-    try {
-      const { getProfile } = await import('../services/api.js')
-      const data = await getProfile()
-      const p = data.profile || {}
+    this._inflight = (async () => {
+      try {
+        const { getProfile } = await import('../services/api.js')
+        const data = await getProfile()
+        const p = data.profile || {}
 
-      // Profile card — the backend response is authoritative. We do NOT
-      // fall back to the previous value in the store, otherwise one user's
-      // name/bio could linger after switching accounts. Empty means empty.
-      Object.assign(this.profile, {
-        name: p.name || '',
-        headline: p.headline || '',
-        bio: p.bio || '',
-        avatar: p.avatar || this.defaultAvatar,
-      })
-
-      // My Skills chips (backend returns an array of strings)
-      if (Array.isArray(p.skills)) {
-        this.skills = p.skills.map((label, i) => ({
-          label,
-          gradient: i === 0,
-        }))
-      }
-
-      // AI-generated strength badges (from the profile-gen feature).
-      this.highlights = Array.isArray(p.highlights) ? p.highlights : []
-
-      // Personal Information form
-      if (p.personalInfo) {
-        Object.assign(this.personalInfo, {
-          fullName: p.personalInfo.fullName || '',
-          role: p.personalInfo.role || '',
-          bio: p.personalInfo.bio || '',
-          github: p.personalInfo.github || '',
-          linkedin: p.personalInfo.linkedin || '',
-          location: p.personalInfo.location || '',
+        // Profile card — the backend response is authoritative. We do NOT
+        // fall back to the previous value in the store, otherwise one user's
+        // name/bio could linger after switching accounts. Empty means empty.
+        Object.assign(this.profile, {
+          name: p.name || '',
+          headline: p.headline || '',
+          bio: p.bio || '',
+          avatar: p.avatar || this.defaultAvatar,
         })
-      }
 
-      this.loaded = true
-    } catch (err) {
-      // A 401 just means the session isn't active — expected, not a bug.
-      if (err?.status === 401) {
-        console.info('Profile not loaded: session not active.')
-      } else {
-        console.error('Failed to load profile:', err)
+        // My Skills chips (backend returns an array of strings)
+        if (Array.isArray(p.skills)) {
+          this.skills = p.skills.map((label, i) => ({
+            label,
+            gradient: i === 0,
+          }))
+        }
+
+        // AI-generated strength badges (from the profile-gen feature).
+        this.highlights = Array.isArray(p.highlights) ? p.highlights : []
+
+        // Personal Information form
+        if (p.personalInfo) {
+          Object.assign(this.personalInfo, {
+            fullName: p.personalInfo.fullName || '',
+            role: p.personalInfo.role || '',
+            bio: p.personalInfo.bio || '',
+            github: p.personalInfo.github || '',
+            linkedin: p.personalInfo.linkedin || '',
+            location: p.personalInfo.location || '',
+          })
+        }
+
+        this.loaded = true
+      } catch (err) {
+        // A 401 just means the session isn't active — expected, not a bug.
+        if (err?.status === 401) {
+          console.info('Profile not loaded: session not active.')
+        } else {
+          console.error('Failed to load profile:', err)
+        }
+      } finally {
+        this.loading = false
+        this._inflight = null
       }
-    } finally {
-      this.loading = false
-    }
+    })()
+
+    return this._inflight
   },
 
   // Merge partial updates into the live profile.
@@ -114,6 +129,7 @@ export const profileStore = reactive({
     this.resetPersonalInfo()
     this.loaded = false
     this.loading = false
+    this._inflight = null
   },
 
   // ── My Skills (Profile page) ──────────────────────────────────────

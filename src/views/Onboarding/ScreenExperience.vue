@@ -51,6 +51,7 @@
 
 <script>
 import { updateExperience, getOnboardingProfile } from "../../services/api";
+import { toast } from "../../state/toastStore";
 
 export default {
  data() {
@@ -90,7 +91,7 @@ export default {
   methods: {
     async saveExperience() {
       if (!this.selectedExp) {
-        alert("Please select an experience level");
+        toast.error("Please select an experience level");
         return;
       }
 
@@ -99,7 +100,7 @@ export default {
         await updateExperience(this.selectedExp);
         this.$router.push("/ScreenAvailability");
       } catch (err) {
-        alert(err.message || "Failed to save");
+        toast.error(err.message || "Failed to save");
       } finally {
         this.loading = false;
       }

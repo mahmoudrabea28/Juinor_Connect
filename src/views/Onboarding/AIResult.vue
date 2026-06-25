@@ -82,6 +82,7 @@
 
 <script>
 import { getLatestProfile, getLatestIdeas, regenerateIdeas, joinProject } from '../../services/api';
+import { toast } from "../../state/toastStore";
 
 export default {
   data() {
@@ -115,7 +116,7 @@ export default {
       try {
         await joinProject({ title: team.title, description: team.description, requiredSkills: team.requiredSkills, categories: team.categories, difficulty: team.difficulty, estimatedTime: team.estimatedTime });
         team.joined = true;
-      } catch (e) { alert(e.message || 'Could not join'); }
+      } catch (e) { toast.error(e.message || 'Could not join'); }
     },
   },
 };

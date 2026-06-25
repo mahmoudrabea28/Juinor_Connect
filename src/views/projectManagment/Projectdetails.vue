@@ -475,7 +475,7 @@ function formatSize(mb) {
 
   <main
     v-else-if="project"
-    class="px-main-margin-x py-10 space-y-gap-custom"
+    class="max-w-[1280px] mx-auto w-full px-main-margin-x py-10 space-y-gap-custom"
   >
       <button @click="router.back()" class="flex items-center text-text-gray hover:text-text-black transition group" aria-label="Go back">
         <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -603,7 +603,7 @@ function formatSize(mb) {
     </main>
 
     <!-- ── Project Not Found ── -->
-    <main v-else class="px-main-margin-x py-20 flex flex-col items-center justify-center min-h-[60vh]">
+    <main v-else class="max-w-[1280px] mx-auto w-full px-main-margin-x py-20 flex flex-col items-center justify-center min-h-[60vh]">
       <div class="w-20 h-20 bg-[#F1F5F9] rounded-3xl flex items-center justify-center mb-6">
         <svg class="w-10 h-10 text-text-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
       </div>

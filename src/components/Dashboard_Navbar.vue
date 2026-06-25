@@ -44,9 +44,11 @@
         </div>
         
         <div class="header-profile">
+          <!-- أيقونة الإشعارات مخفية مؤقتًا. لإرجاعها، شيل التعليق:
           <button class="notification-btn" @click="handleNotification">
             <span class="material-symbols-outlined">notifications</span>
           </button>
+          -->
           
           <div class="profile-card" @click="toggleProfileMenu">
             <div class="profile-img-container">

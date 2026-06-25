@@ -112,6 +112,7 @@
 import { reactive, onMounted } from 'vue'
 import { getOnboardingProfile, updatePersonalInfo } from '../../services/api'
 import { profileStore } from '../../state/profileStore'
+import { toast } from '../../state/toastStore'
 
 // Local draft, seeded from whatever is currently saved in the store.
 // Typing only edits this draft; nothing reaches the store until Save
@@ -125,7 +126,8 @@ const loadProfile = async () => {
     Object.assign(form, {
       fullName: data.profile?.fullName || '',
       role: data.profile?.currentRole || '',
-      bio: data.profile?.shortBio || '',
+      // النبذة بقت في حقل bio الموحّد (مع دعم القديم shortBio).
+      bio: data.profile?.bio || data.profile?.shortBio || '',
     })
   } catch (err) {
     console.error(err)
@@ -159,9 +161,10 @@ const handleSave = async () => {
       new CustomEvent('profile-updated')
     )
 
-    alert('Profile updated successfully')
+    toast.success('Profile updated')
   } catch (err) {
     console.error(err)
+    toast.error(err.message || "Couldn't update your profile")
   }
 }
 

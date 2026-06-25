@@ -66,6 +66,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getProjectById, joinProject, leaveProject, checkStatus } from '../../services/api'
+import { toast } from '../../state/toastStore'
 import Navbar from '../../components/Navbar.vue'
 import LoadingScreen from '../../components/LoadingScreen.vue'
 
@@ -104,7 +105,7 @@ async function handleJoin(){
   try {
     const d = await joinProject({ title:project.value.title, description:project.value.description, requiredSkills:project.value.requiredSkills, categories:project.value.categories, difficulty:project.value.difficulty, estimatedTime:project.value.estimatedTime })
     project.value = d.project
-  } catch(e){ alert(e.message) }
+  } catch(e){ toast.error(e.message) }
   finally { joining.value = false }
 }
 
@@ -112,7 +113,7 @@ async function handleLeave(){
   if (!confirm('Leave this team?')) return
   leaving.value = true
   try { await leaveProject(project.value._id); router.push('/browse-teams') }
-  catch(e){ alert(e.message) }
+  catch(e){ toast.error(e.message) }
   finally { leaving.value = false }
 }
 </script>

@@ -39,7 +39,7 @@
 
              <button class="cta-button" @click="handleViewMatches" :disabled="loading">
                <span v-if="loading" class="spinner-sm"></span>
-               {{ loading ? 'Generating...' : 'View My Matches' }}
+               {{ loading ? progressMsg : 'View My Matches' }}
              </button>
              <p v-if="errorMsg" style="color:#ef4444;margin-top:12px;font-size:14px;text-align:center">{{ errorMsg }}</p>
     </section>
@@ -54,21 +54,53 @@ import { generateProfile, generateIdeas } from '../../services/api';
 const router = useRouter();
 const loading = ref(false);
 const errorMsg = ref('');
+const progressMsg = ref('Generating...');
 
 const checklist = [
   'Skills Analyzed', 'Interests Matched', 'Personality Evaluated', 'Availability Checked'
 ];
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// The AI endpoints are rate-limited to one request every 5 seconds on the
+// server. Firing both with Promise.all made the second one fail instantly
+// with 429. So we run them one after another, and if we still hit the
+// cooldown we wait the requested number of seconds and retry once or twice.
+async function callWithRetry(fn, maxRetries = 3) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await fn();
+    } catch (e) {
+      const isRateLimited =
+        e?.status === 429 || /wait\s+\d+s|too many/i.test(e?.message || '');
+      if (!isRateLimited || attempt > maxRetries) throw e;
+
+      // Pull the number of seconds from the server message if present,
+      // otherwise fall back to the 5s cooldown.
+      const match = /wait\s+(\d+)s/i.exec(e?.message || '');
+      const waitMs = (match ? parseInt(match[1], 10) : 5) * 1000 + 250;
+      await sleep(waitMs);
+    }
+  }
+}
+
 async function handleViewMatches() {
+  if (loading.value) return; // guard against double-clicks
   loading.value = true;
   errorMsg.value = '';
   try {
-    await Promise.all([generateProfile(), generateIdeas()]);
+    // Sequential, not parallel — respects the server's per-request cooldown.
+    progressMsg.value = 'Building your profile...';
+    await callWithRetry(() => generateProfile());
+    progressMsg.value = 'Finding your matches...';
+    await sleep(5250); // wait out the cooldown before the next AI call
+    await callWithRetry(() => generateIdeas());
     router.push('/AIResult');
   } catch (e) {
     errorMsg.value = e.message || 'Something went wrong, please try again.';
   } finally {
     loading.value = false;
+    progressMsg.value = 'Generating...';
   }
 }
 </script>

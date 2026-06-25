@@ -96,7 +96,7 @@ const items = [
       <div class="hero__visual">
         <div class="hero__collage">
           <img
-            src="../../assets/images/hero section (1).png"
+            src="../../assets/images/Hero section (1).png"
             alt="Students collaborating during a hackathon"
           />
         </div>

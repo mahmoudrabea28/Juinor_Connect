@@ -1,4 +1,4 @@
-export const BASE_URL = "http://localhost:5000";
+export const BASE_URL = "https://juniorconnectback.mahmoudrabea.website";
 export async function api(path, { method = "GET", body } = {}) {
   const options = {
     method,

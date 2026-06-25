@@ -64,9 +64,6 @@
               <button class="btn-social" type="button" @click="socialLogin('google')">
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.86l6.1-6.1C34.46 3.09 29.53 1 24 1 14.79 1 6.97 6.52 3.44 14.44l7.1 5.52C12.3 13.63 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.54 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.68c-.55 2.97-2.2 5.48-4.68 7.17l7.19 5.59C43.37 37.42 46.54 31.41 46.54 24.5z"/><path fill="#FBBC05" d="M10.54 28.46A14.5 14.5 0 019.5 24c0-1.56.27-3.07.74-4.49L3.14 13.99A23.01 23.01 0 001 24c0 3.7.87 7.2 2.44 10.3l7.1-5.84z"/><path fill="#34A853" d="M24 47c5.53 0 10.17-1.83 13.56-4.96l-7.19-5.59C28.53 37.84 26.4 38.5 24 38.5c-6.3 0-11.64-4.24-13.55-9.95l-7.1 5.84C6.97 42.58 14.79 47 24 47z"/></svg> Google
               </button>
-              <button class="btn-social" type="button" @click="socialLogin('facebook')">
-                <i class="fab fa-facebook" style="color: #1877F2; margin-right: 8px;"></i> Facebook
-              </button>
             </div>
             <p class="signup-line">Have no account? <a href="#" @click.prevent="toggleMode" class="signup-link">Sign up</a></p>
           </div>
@@ -151,9 +148,6 @@
             <div class="social-row">
               <button class="btn-social" type="button" @click="socialLogin('google')">
                 <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.14 0 5.95 1.08 8.17 2.86l6.1-6.1C34.46 3.09 29.53 1 24 1 14.79 1 6.97 6.52 3.44 14.44l7.1 5.52C12.3 13.63 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.54 24.5c0-1.64-.15-3.22-.42-4.75H24v9h12.68c-.55 2.97-2.2 5.48-4.68 7.17l7.19 5.59C43.37 37.42 46.54 31.41 46.54 24.5z"/><path fill="#FBBC05" d="M10.54 28.46A14.5 14.5 0 019.5 24c0-1.56.27-3.07.74-4.49L3.14 13.99A23.01 23.01 0 001 24c0 3.7.87 7.2 2.44 10.3l7.1-5.84z"/><path fill="#34A853" d="M24 47c5.53 0 10.17-1.83 13.56-4.96l-7.19-5.59C28.53 37.84 26.4 38.5 24 38.5c-6.3 0-11.64-4.24-13.55-9.95l-7.1 5.84C6.97 42.58 14.79 47 24 47z"/></svg> Google
-              </button>
-              <button class="btn-social" type="button" @click="socialLogin('facebook')">
-                <i class="fab fa-facebook" style="color: #1877F2; margin-right: 8px;"></i> Facebook
               </button>
             </div>
             <p class="signup-line">Already have an account? <a href="#" @click.prevent="toggleMode" class="signup-link">Log in</a></p>

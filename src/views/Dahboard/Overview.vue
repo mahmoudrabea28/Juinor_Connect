@@ -93,6 +93,7 @@
 
 <script>
 import DashboardLayout from '../../components/Dashboard_Navbar.vue'; 
+import { toast } from "../../state/toastStore";
 import Navbar from '../../components/Navbar.vue';
 export default {
   name: 'DashboardContent',
@@ -155,7 +156,7 @@ export default {
   },
   methods: {
     viewAIInsights() {
-      alert('AI Insights feature coming soon!');
+      toast.info('AI Insights feature coming soon');
     },
     createNewProject() {
       console.log('Redirecting to create a new project...');

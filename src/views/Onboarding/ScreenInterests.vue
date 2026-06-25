@@ -52,6 +52,7 @@
 
 <script>
 import { updateInterests, getOnboardingProfile } from "../../services/api";
+import { toast } from "../../state/toastStore";
 
 export default {
   data() {
@@ -86,7 +87,7 @@ export default {
     },
     async saveInterests() {
       if (this.selectedInterests.length === 0) {
-        alert("Please select at least one interest");
+        toast.error("Please select at least one interest");
         return;
       }
 
@@ -95,7 +96,7 @@ export default {
         await updateInterests(this.selectedInterests);
         this.$router.push("/ScreenExperience");
       } catch (err) {
-        alert(err.message || "Failed to save");
+        toast.error(err.message || "Failed to save");
       } finally {
         this.loading = false;
       }
