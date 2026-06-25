@@ -77,7 +77,12 @@ export const profileStore = reactive({
 
       this.loaded = true
     } catch (err) {
-      console.error('Failed to load profile:', err)
+      // A 401 just means the session isn't active — expected, not a bug.
+      if (err?.status === 401) {
+        console.info('Profile not loaded: session not active.')
+      } else {
+        console.error('Failed to load profile:', err)
+      }
     } finally {
       this.loading = false
     }

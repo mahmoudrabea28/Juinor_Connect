@@ -36,12 +36,22 @@ export async function api(path, { method = "GET", body } = {}) {
         window.dispatchEvent(new CustomEvent("session-expired"));
       }
 
-      throw new Error(data.message || "An unexpected error occurred.");
+      const err = new Error(data.message || "An unexpected error occurred.");
+      // Tag the status so callers (and the logger below) can tell an
+      // expected "session expired" 401 apart from a real failure.
+      err.status = res.status;
+      throw err;
     }
 
     return data;
   } catch (error) {
-    console.error(`API Error on ${path}:`, error);
+    // A 401 is expected whenever the session has expired — it's not a bug,
+    // so log it quietly as info instead of a noisy red error.
+    if (error?.status === 401) {
+      console.info(`Session not active for ${path} (401).`);
+    } else {
+      console.error(`API Error on ${path}:`, error);
+    }
     throw error;
   }
 }
