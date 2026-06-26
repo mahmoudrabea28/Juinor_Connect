@@ -12,11 +12,12 @@
  *        export const buildImages = { sunpath, ... }
  */
 
+import sunpath from './images/Card 1.png'
+import tutorly from './images/Card 2.png'
+import pixelio from './images/Card 3.png'
+
 export const buildImages = {
-  // SunPath — phone weather mockup
-  sunpath: 'https://www.figma.com/api/mcp/asset/6920d0c0-e496-46b9-8c1f-6e91a4e4bbb8',
-  // Tutorly — dashboard UI
-  tutorly: 'https://www.figma.com/api/mcp/asset/100793b4-1525-4664-ba4d-40fc29b6ac8e',
-  // Pixel.io — home-cinema illustration
-  pixelio: 'https://www.figma.com/api/mcp/asset/3e642862-5856-492e-9df2-c5502fb5d680',
+  sunpath,
+  tutorly,
+  pixelio,
 }

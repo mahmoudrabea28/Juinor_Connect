@@ -44,7 +44,7 @@
 
       <div class="footer-col footer-illustration">
         <img 
-          src="../assets/images/footer bg.png"
+          src="../assets/images/Fotter img.png"
           alt="Junior Connect Characters" 
           class="characters-img"
           @error="handleIllustrationError"
