@@ -44,7 +44,7 @@
         </div>
         
         <div class="header-profile">
-          <!-- أيقونة الإشعارات مخفية مؤقتًا. لإرجاعها، شيل التعليق:
+          <!-- Notification icon temporarily hidden. To restore it, uncomment:
           <button class="notification-btn" @click="handleNotification">
             <span class="material-symbols-outlined">notifications</span>
           </button>
@@ -148,7 +148,7 @@ export default {
   padding: 35px;
 }
 
-/* --- تنسيقات الـ Sidebar --- */
+/* --- Sidebar styles --- */
 .sidebar {
   width: 260px;
   min-width: 260px;

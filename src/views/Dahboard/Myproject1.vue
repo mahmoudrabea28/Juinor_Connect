@@ -134,13 +134,13 @@ export default {
   data() {
     return {
       currentTab: 'active',
-      // دمجنا كل البيانات (الأكتيف والكومبليتيد) في مصفوفة واحدة مع تحديد الـ status
+      // Merge all data (active and completed) into a single array tagged with status
       projects: [
         {
           title: 'Portfolio App Builder',
           category: 'Developer Tools',
           membersCount: 4,
-          colorClass: 'purple', // غيرتها لـ purple عشان تتماشى مع الـ CSS بتاعك
+          colorClass: 'purple', // Changed to purple to match the existing CSS
           completionRate: 92,
           matchScore: 92,
           avatar: '../../assets/images/git-fork.png',
@@ -198,7 +198,7 @@ export default {
     };
   },
   computed: {
-    // الفلترة بتتم تلقائياً أول ما تضغط على الـ Tab
+    // Filtering runs automatically as soon as a Tab is clicked
     filteredProjects() {
       return this.projects.filter(project => project.status === this.currentTab);
     }

@@ -1,7 +1,7 @@
 import { reactive } from 'vue'
 
-// مخزن مركزي بسيط للـ toasts. أي مكون يقدر ينادي toast.success(...) أو
-// toast.error(...) وتظهر رسالة عائمة بدل alert() القبيح بتاع المتصفح.
+// Simple central store for toasts. Any component can call toast.success(...) or
+// toast.error(...) to show a floating message instead of the ugly browser alert().
 let nextId = 1
 
 export const toastState = reactive({
@@ -13,7 +13,7 @@ function add(message, type = 'info', duration = 3500) {
   const id = nextId++
   toastState.items.push({ id, message, type })
 
-  // نشيلها تلقائيًا بعد المدة المحددة.
+  // Auto-dismiss it after the configured duration.
   if (duration > 0) {
     setTimeout(() => remove(id), duration)
   }
@@ -25,7 +25,7 @@ function remove(id) {
   if (i !== -1) toastState.items.splice(i, 1)
 }
 
-// واجهة الاستخدام: toast.success('...') / toast.error('...') / toast.info('...')
+// Public API: toast.success('...') / toast.error('...') / toast.info('...')
 export const toast = {
   success: (msg, duration) => add(msg, 'success', duration),
   error: (msg, duration) => add(msg, 'error', duration),

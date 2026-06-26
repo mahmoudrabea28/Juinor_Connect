@@ -25,7 +25,7 @@ import '../../assets/images/main.css'
 
 <style scoped>
 .logo-img {
-  height: 45px; /* أو أي حجم مناسب */
+  height: 45px; /* or any suitable size */
   width: auto;
 }
 .header {

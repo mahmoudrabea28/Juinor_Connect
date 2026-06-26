@@ -204,8 +204,8 @@ const handleSave = async () => {
     })
 
     window.dispatchEvent(new CustomEvent('profile-updated'))
-    // الاسم والصورة اتزامنوا على الـ User كمان في الباك إند، فنبلّغ
-    // الـ Navbar (اللي بيقرأ الاسم من authStore) إنه يحدّث نفسه.
+    // Name and avatar are also synced on the User in the backend, so we notify
+    // the Navbar (which reads the name from authStore) to refresh itself.
     window.dispatchEvent(new CustomEvent('user-updated'))
 
     // The hosted URL is now the source of truth; drop the local blob.

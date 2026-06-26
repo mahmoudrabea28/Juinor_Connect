@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       steps: ['Personal info', 'Skills', 'Interests', 'Experience level', 'Availability', 'AI profile'],
-      // المهارات موجودة هنا مباشرة
+      // Skills are listed here directly
       skills: ['React', 'TypeScript', 'Node.js', 'Python', 'UI/UX Design', 'Figma', 'Next.js', 'PostgreSQL', 'Machine Learning', 'Product Management', 'Tailwind CSS', 'GraphQL', 'DevOps', 'Branding'],
       selectedSkills: [],
       loading: false
@@ -65,7 +65,7 @@ export default {
   },
   async created() {
     try {
-      // فقط نجلب المهارات التي سبق اختيارها من السيرفر
+      // Only fetch the skills previously selected from the server
       const data = await getOnboardingProfile();
       if (data && data.profile && data.profile.skills) {
         this.selectedSkills = data.profile.skills;
@@ -90,7 +90,7 @@ export default {
 
       this.loading = true;
       try {
-        // نرسل المهارات للسيرفر ليقوم بتخزينها
+        // Send the skills to the server to be stored
         await updateSkills(this.selectedSkills);
         this.$router.push("/ScreenInterests");
       } catch (err) {

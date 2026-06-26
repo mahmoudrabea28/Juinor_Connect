@@ -126,7 +126,7 @@ const loadProfile = async () => {
     Object.assign(form, {
       fullName: data.profile?.fullName || '',
       role: data.profile?.currentRole || '',
-      // النبذة بقت في حقل bio الموحّد (مع دعم القديم shortBio).
+      // The bio now lives in the unified `bio` field (with legacy `shortBio` fallback).
       bio: data.profile?.bio || data.profile?.shortBio || '',
     })
   } catch (err) {

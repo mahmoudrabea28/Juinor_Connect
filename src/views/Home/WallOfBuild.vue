@@ -1,12 +1,12 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { buildImages } from '../../assets/images.js'
-import VanillaTilt from 'vanilla-tilt' // تأكدي من تثبيتها عبر npm install vanilla-tilt
+import VanillaTilt from 'vanilla-tilt' // Make sure it's installed via: npm install vanilla-tilt
 
-// --- الحالات الخاصة بجزء الـ Hero ---
+// --- Hero section state ---
 const entered = ref(false)
 
-// --- الحالات الخاصة بجزء الـ Wall ---
+// --- Wall section state ---
 const revealed = ref(false)
 const root = ref(null)
 let observer = null
@@ -44,7 +44,7 @@ const builds = [
   },
 ]
 
-// تفعيل تأثير حركة الكروت ثلاثية الأبعاد
+// Enable the 3D tilt effect on the cards
 const initTiltEffect = () => {
   if (window.innerWidth > 768) {
     const cardElements = document.querySelectorAll('.wall__grid > *')
@@ -58,10 +58,10 @@ const initTiltEffect = () => {
 }
 
 onMounted(() => {
-  // تفعيل أنيميشن الـ Hero عند تحميل الصفحة
+  // Trigger the Hero animation on page load
   requestAnimationFrame(() => requestAnimationFrame(() => (entered.value = true)))
 
-  // مراقبة ظهور الـ Wall لتشغيل أنيميشن الدخول والـ Tilt
+  // Observe the Wall entering the viewport to run its entry animation and Tilt
   if (!('IntersectionObserver' in window)) {
     revealed.value = true
     nextTick(() => initTiltEffect())
@@ -191,7 +191,7 @@ onBeforeUnmount(() => {
 }
 
 /* ==========================================================================
-   تنسيقات جزء الـ Hero
+   Hero section styles
    ========================================================================== */
 .hero {
   position: relative;
@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
 }
 
 /* ==========================================================================
-   تنسيقات جزء الـ Wall وجدار المشاريع
+   Wall section and projects wall styles
    ========================================================================== */
 .wall {
   width: 100%;
@@ -352,7 +352,7 @@ onBeforeUnmount(() => {
 }
 
 /* ==========================================================================
-   تنسيقات كروت المشاريع (Cards)
+   Project card styles
    ========================================================================== */
 .tilt-card-target {
   cursor: pointer;
@@ -491,7 +491,7 @@ onBeforeUnmount(() => {
 }
 
 /* ==========================================================================
-   شاشات العرض والتجاوب (Responsive)
+   Responsive / breakpoint styles
    ========================================================================== */
 @media (max-width: 1024px) {
   .hero__inner {

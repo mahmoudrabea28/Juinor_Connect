@@ -69,7 +69,7 @@ export default {
       if (data && data.profile) {
         this.formData.fullName = data.profile.fullName || "";
         this.formData.currentRole = data.profile.currentRole || "";
-        // النبذة بقت محفوظة في حقل bio الموحّد (مع دعم القديم shortBio).
+        // The bio is now stored in the unified `bio` field (with legacy `shortBio` fallback).
         this.formData.shortBio = data.profile.bio || data.profile.shortBio || "";
       }
     } catch (err) { console.error("Error loading profile:", err); }
@@ -94,7 +94,7 @@ export default {
 </script>
 
 <style scoped>
-/* التنسيق الأصلي كما هو */
+/* Original styling, unchanged */
 .page-wrapper { min-height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center; padding: 40px 20px; position: relative; overflow: hidden; background: linear-gradient(160deg, #E0E7FF 0%, #EFF6FF 55%, #FFFFFF 100%); }
 .content-wrapper { width: 100%; max-width: 768px; z-index: 1; }
 .page-wrapper::before { content: ''; position: absolute; top: -60px; left: -60px; width: 220px; height: 220px; border-radius: 50%; background: #C6D2FF; filter: blur(60px); opacity: 0.75; pointer-events: none; }
@@ -142,7 +142,7 @@ input:focus, textarea:focus { border-color: #2563EB; }
   box-shadow: 0 16px 30px -10px rgba(43, 127, 255, 0.65); }
 .continue-btn:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-/* إضافات رسائل الخطأ */
+/* Error message additions */
 .error-text { color: #dc2626; font-size: 11px; margin-top: -5px; }
 .input-error { border-color: #dc2626 !important; }
 </style>

@@ -125,15 +125,15 @@ export const uploadAvatar = (base64) =>
   api("/api/profile/avatar", { method: "POST", body: { base64 } });
 
 /*----------------------*/
-// دوال عامة لجلب البروفايل والخيارات
+// Generic helpers for fetching the profile and option lists
 export const getOnboardingProfile = () => api("/api/onboarding");
 export const getOnboardingOptions = () => api("/api/onboarding/options");
 
-// دالة أساسية موحدة للتعامل مع خطوات التقديم (السر هنا في إضافة /api)
+// Core unified helper for the application steps (note the required /api prefix)
 export const updateOnboardingStep = (step, data) => 
   api(`/api/onboarding/step/${step}`, { method: "PUT", body: data });
 
-// دوال مختصرة لكل خطوة (استخدم هذه الدوال في مكونات الـ Vue)
+// Shorthand helpers per step (use these inside Vue components)
 export const updatePersonalInfo = (data) => updateOnboardingStep(1, data);
 export const updateSkills = (skills) => updateOnboardingStep(2, { skills });
 export const updateInterests = (interests) => updateOnboardingStep(3, { interests });

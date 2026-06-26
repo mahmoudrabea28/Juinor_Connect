@@ -255,7 +255,7 @@ export default {
       // Chat
       chatInput: '',
       typing: false,
-      chatFullscreen: false, // يكبّر الشات داخل نفس الصفحة (مش صفحة منفصلة)
+      chatFullscreen: false, // Expands the chat within the same page (not a separate route)
       pendingImage: null,
       pendingFile: null,
       showClearChatModal: false,
@@ -283,9 +283,9 @@ export default {
     };
   },
   computed: {
-    // المشاريع اللي الفريق فيها اكتمل (4 أعضاء) — status === "full".
-    // ساعتها بس تظهر في القائمة عشان يختارها ويكمّل شغل عليها.
-    // بنشيك على عدد الأعضاء كمان احتياطًا لو الـ status مش متحدّث.
+    // Projects whose team is complete (4 members) — status === "full".
+    // Only then they appear in the list so the user can pick and continue working.
+    // We also check the member count as a fallback in case status is stale.
     fullTeamProjects() {
       return (this.projects || []).filter(
         (p) => p.status === 'full' || (p.members?.length || 0) >= 4
@@ -322,14 +322,14 @@ export default {
     this.loadSuggestions();
     this.loadRecommendations();
 
-    // اضغط Escape للخروج من وضع ملء الشاشة للشات.
+    // Press Escape to exit the chat full-screen mode.
     this._onKeydown = (e) => {
       if (e.key === 'Escape' && this.chatFullscreen) this.toggleChatFullscreen();
     };
     window.addEventListener('keydown', this._onKeydown);
   },
   beforeUnmount() {
-    // نظافة: نرجّع تمرير الصفحة ونشيل المستمع لو خرجنا والشات مكبّر.
+    // Cleanup: restore page scroll and remove the listener if we leave while expanded.
     document.body.style.overflow = '';
     if (this._onKeydown) window.removeEventListener('keydown', this._onKeydown);
   },
@@ -506,10 +506,10 @@ export default {
     clearFile() { this.pendingFile = null; },
 
     refreshChat() { if (this.selectedTaskId) this.selectTask(this.tasks.findIndex(t => t._id === this.selectedTaskId)); },
-    // يكبّر/يصغّر الشات داخل نفس الصفحة بدل ما ينقل لصفحة منفصلة.
+    // Toggles the chat size within the same page instead of navigating away.
     toggleChatFullscreen() {
       this.chatFullscreen = !this.chatFullscreen;
-      // نمنع تمرير الصفحة ورا الشات وهو مكبّر.
+      // Lock the page scroll behind the chat while it's expanded.
       document.body.style.overflow = this.chatFullscreen ? 'hidden' : '';
     },
     clearChatHistory() {
@@ -690,7 +690,7 @@ export default {
 /* Chat */
 .chat-container { border: 1px solid var(--border-color); border-radius: 16px; background: #E7F5FF; display: flex; flex-direction: column; min-height: 500px; overflow: hidden; transition: all 0.25s ease; }
 
-/* وضع ملء الشاشة: الشات ياخد الشاشة كلها في نفس الصفحة (overlay). */
+/* Full-screen mode: the chat takes over the whole page (overlay). */
 .chat-container.chat-fullscreen {
   position: fixed;
   inset: 0;

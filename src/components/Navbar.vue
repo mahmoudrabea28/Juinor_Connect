@@ -50,7 +50,7 @@
          </template>
            <template v-else>
     <div class="navbar__user">
-      <!-- أيقونة الإشعارات مخفية مؤقتًا. لإرجاعها، شيل التعليق من الكود التالي:
+      <!-- Notification icon temporarily hidden. To restore it, uncomment the block below:
       <button class="text-indigo-400 hover:text-indigo-600" aria-label="Notifications">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />

@@ -221,7 +221,7 @@ export default {
   },
   computed: {
     filteredTeams() {
-      // هنا يمكنك إضافة منطق الفلترة الفعلي بناءً على الـ Data المرتبطة بالـ inputs
+      // Add the real filtering logic here based on the data bound to the inputs
       return this.teams;
     }
   },

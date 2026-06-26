@@ -123,7 +123,7 @@ function toggleTaskComplete(taskId) {
     if (task) {
       task.completed = !task.completed;
 
-      // نقل تلقائي بين الأعمدة
+      // Automatic move between columns
       if (task.completed) {
         task.status = "done";
       } else {

@@ -51,7 +51,7 @@
 <script setup>
 import { ref } from 'vue'
 
-// مصفوفة البيانات لإدارة الكروت بشكل ديناميكي مرن
+// Data array to manage the cards dynamically
 const events = ref([
   {
     category: 'FLAGSHIP',
@@ -83,14 +83,14 @@ const events = ref([
   }
 ])
 
-// دالة تفاعلية عند الضغط على الزر (مثال للـ Logic)
+// Interactive handler for the button click (example logic)
 const handleCountMeIn = (event) => {
   console.log(`Registered for event: ${event.title}`)
 }
 </script>
 
 <style scoped>
-/* Scoped لضمان عدم تداخل التنسيقات مع باقي المشروع */
+/* Scoped to prevent styles from clashing with the rest of the project */
 
 .section-content {
   width: 100%;
@@ -194,7 +194,7 @@ const handleCountMeIn = (event) => {
   pointer-events: none;
 }
 
-/* الكلاسات الديناميكية للخلفيات */
+/* Dynamic background classes */
 .card-blue { background-color: #2563EB; color: #1a1a1a; }
 .card-yellow { background-color: #FFDC3A; color: #1a1a1a; }
 .card-purple { background-color: #E3D7FB; color: #1a1a1a; }
