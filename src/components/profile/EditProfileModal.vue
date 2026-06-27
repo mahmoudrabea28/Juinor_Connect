@@ -119,6 +119,7 @@
 import { reactive, ref, onBeforeUnmount } from 'vue'
 import { profileStore } from '../../state/profileStore'
 import { updateProfileCard, uploadAvatar } from '../../services/api'
+import { toast } from '../../state/toastStore.js'
 const emit = defineEmits(['close'])
 
 const fileInput = ref(null)
@@ -214,9 +215,12 @@ const handleSave = async () => {
       pendingObjectUrl = null
     }
     pendingBase64 = null
+
+    toast.success('Profile updated successfully!')
     emit('close')
   } catch (err) {
     console.error(err)
+    toast.error('Failed to update profile. Please try again.')
   }
 }
 

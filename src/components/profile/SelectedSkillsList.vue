@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6">
     <div>
       <SkillItem
         v-for="skill in skillsStore.selectedSkills"

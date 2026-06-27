@@ -1,6 +1,6 @@
 <template>
-  <aside class="w-[230px] shrink-0 self-start bg-white rounded-2xl shadow-sm border border-gray-100 py-5 px-3">
-    <nav class="flex flex-col gap-1.5">
+  <aside class="w-full lg:w-[230px] shrink-0 self-start bg-white rounded-2xl shadow-sm border border-gray-100 py-3 px-3 lg:py-5">
+    <nav class="flex flex-row lg:flex-col gap-1.5 overflow-x-auto lg:overflow-visible">
       <template v-for="item in items" :key="item.label">
         <!-- Wired-up pages navigate via vue-router and pick up the
              active style automatically from the current route. -->
@@ -77,7 +77,7 @@ function isActive(item) {
 
 function linkClasses(active) {
   return [
-    'flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium transition-colors',
+    'flex items-center gap-2 lg:gap-3 px-3 lg:px-4 py-2.5 lg:py-3 rounded-lg text-sm lg:text-[15px] font-medium transition-colors whitespace-nowrap shrink-0',
     active ? 'bg-indigo-600 text-white' : 'text-gray-600 hover:bg-gray-50',
   ]
 }

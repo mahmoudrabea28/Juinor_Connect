@@ -1,6 +1,6 @@
 <template>
-  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 flex items-center justify-between">
-    <div class="flex items-center gap-5">
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex items-start sm:items-center gap-4 sm:gap-5 flex-1 min-w-0">
       <div class="relative shrink-0">
         <img
           v-if="profile.avatar"
@@ -48,19 +48,19 @@
         />
       </div>
 
-      <div>
-        <div class="flex items-center gap-3 flex-wrap">
-          <h2 class="text-2xl font-serif text-gray-900">{{ profile.name }}</h2>
+      <div class="min-w-0 flex-1">
+        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 sm:flex-wrap">
+          <h2 class="text-xl sm:text-2xl font-serif text-gray-900 truncate">{{ profile.name }}</h2>
           <span
             v-if="profile.headline"
-            class="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap"
+            class="bg-indigo-50 text-indigo-600 text-xs font-medium px-3 py-1 rounded-full break-words w-fit"
           >
             {{ profile.headline }}
           </span>
         </div>
         <p
           v-if="profile.bio"
-          class="text-gray-500 text-[14px] mt-1.5 max-w-md leading-relaxed"
+          class="text-gray-500 text-[14px] mt-1.5 max-w-md leading-relaxed line-clamp-3 sm:line-clamp-none"
         >
           {{ profile.bio }}
         </p>
@@ -74,7 +74,7 @@
     </div>
 
     <button
-      class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shrink-0"
+      class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors shrink-0 w-full sm:w-auto"
       @click="isModalOpen = true"
     >
       Edit Profile

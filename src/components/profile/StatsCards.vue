@@ -1,5 +1,5 @@
 <template>
-  <section class="grid grid-cols-3 gap-5 mt-5">
+  <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 mt-5">
     <div
       v-for="stat in stats"
       :key="stat.label"

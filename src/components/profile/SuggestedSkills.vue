@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mt-5">
+  <section class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-6 mt-5">
     <h3 class="text-xl font-serif text-gray-900">Suggested Skills</h3>
     <p class="text-sm text-gray-400 mt-1 mb-4">Based on your interests</p>
 

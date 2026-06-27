@@ -47,6 +47,7 @@ import SelectedSkillsList from '../../components/profile/SelectedSkillsList.vue'
 import SuggestedSkills from '../../components/profile/SuggestedSkills.vue'
 import AddSkillModal from '../../components/profile/AddSkillModal.vue'
 import { updateSkills } from '../../services/api'
+import { toast } from '../../state/toastStore.js'
 import { getOnboardingProfile } from '../../services/api'
 import {getOnboardingOptions} from '../../services/api'
 
@@ -68,8 +69,11 @@ const handleSaveChanges = async () => {
     window.dispatchEvent(
       new CustomEvent('skills-updated')
     )
+
+    toast.success('Skills saved successfully!')
   } catch (err) {
     console.error(err)
+    toast.error('Failed to save skills. Please try again.')
   }
 }
 onMounted(async () => {
