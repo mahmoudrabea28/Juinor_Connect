@@ -19,7 +19,10 @@ const projectId = computed(() => route.params.id || props.id);
 
 const project = ref(null);
 const loading = ref(false);
-
+const router = useRouter();
+const goBack = () => {
+  router.push("/projects");
+};
 const teamCount = computed(() => project.value?.teamMembers?.length || 0)
 function normalizeProject(data, tasks = []) {
   const normalizedTasks = tasks.map(t => ({
@@ -475,47 +478,42 @@ function formatSize(mb) {
 
   <main
     v-else-if="project"
-    class="max-w-[1280px] mx-auto w-full px-main-margin-x py-10 space-y-gap-custom"
+    class="max-w-[1280px] mx-auto w-full px-4 sm:px-6 lg:px-main-margin-x py-6 md:py-8 lg:py-10 space-y-6 lg:space-y-gap-custom"
   >
-      <button @click="router.back()" class="flex items-center text-text-gray hover:text-text-black transition group" aria-label="Go back">
+      <button @click="goBack" class="flex items-center text-text-gray hover:text-text-black transition group" aria-label="Go back">
         <svg class="w-5 h-5 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       </button>
 
-      <div class="flex items-start justify-between">
+     <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
         <div>
           <p class="font-inter text-xs text-text-gray mb-1">
             <RouterLink to="/projects/allProjects" class="hover:text-main transition-colors">ALL Projects</RouterLink>
             <span class="mx-1">&#8250;</span>
             <span class="font-medium text-text-black">{{ project.title }}</span>
           </p>
-          <h1 class="font-montaga text-3xl text-text-black leading-tight">{{ project.title }}</h1>
-          <p class="font-inter text-sm text-text-gray mt-1.5">{{ project.category }} &middot; Due {{ project.dueDate }}</p>
+          <h1 class="font-montaga text-2xl sm:text-3xl lg:text-4xl text-text-black leading-tight">{{ project.title }}</h1>
+          <p class="font-inter text-xs sm:text-sm text-text-gray mt-1.5">{{ project.category }} &middot; Due {{ project.dueDate }}</p>
         </div>
         <div class="flex items-center mt-1">
           <div class="flex -space-x-2">
- <div class="w-9 h-9 rounded-full border border-indigo-300 flex items-center justify-center text-indigo-500">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-    <circle cx="12" cy="8" r="4" />
-    <path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" />
-  </svg>
-</div>
           </div>
-          <span class="ml-1 font-inter text-sm text-text-gray font-medium">+{{ project.extraTeamCount }}</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-1 border-b border-gray-200">
+      <div class="overflow-x-auto scrollbar-hide border-b border-gray-200">
+    <div class="flex min-w-max gap-1">
         <button v-for="tab in tabs" :key="tab" @click="activeTab = tab"
           :class="['px-4 py-2.5 text-sm font-inter font-medium transition-colors relative',
             activeTab === tab
               ? 'text-main after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-main'
-              : 'text-text-gray hover:text-text-black']">
+              : 'text-text-gray hover:text-text-black']"
+              class="flex-shrink-0 px-3 sm:px-4 py-2.5 text-sm font-inter font-medium transition-colors relative whitespace-nowrap">
           {{ tab }}
         </button>
       </div>
-
+      </div>
       <!-- ===================== OVERVIEW ===================== -->
       <ProductDetailsOverview v-if="activeTab === 'Overview'"
         :project="project"
@@ -618,7 +616,7 @@ function formatSize(mb) {
     <!-- ===================== ADD TASK MODAL ===================== -->
     <Teleport to="body">
       <div v-if="showAddTask" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" @click.self="closeAddTask">
-        <div class="bg-white rounded-2xl shadow-shadow-2 w-full max-w-lg mx-4 p-6">
+        <div class="bg-white rounded-2xl shadow-shadow-2 w-[95%] sm:w-full max-w-lg mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <div class="flex items-center justify-between mb-5">
             <h2 class="font-montaga text-xl font-bold text-text-black">Add New Task</h2>
             <button @click="closeAddTask" class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-text-gray hover:bg-gray-50 transition-colors">
@@ -635,7 +633,7 @@ function formatSize(mb) {
               <textarea v-model="newTask.desc" rows="3" placeholder="Optional description"
                 class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black placeholder-text-gray focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all resize-none"></textarea>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block font-inter text-sm font-medium text-text-black mb-1.5">Priority</label>
                 <select v-model="newTask.priority" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all">
@@ -664,7 +662,7 @@ function formatSize(mb) {
     <!-- ===================== ADD MILESTONE MODAL ===================== -->
     <Teleport to="body">
       <div v-if="showMilestoneModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm" @click.self="closeMilestoneModal">
-        <div class="bg-white rounded-2xl shadow-shadow-2 w-full max-w-lg mx-4 p-6">
+        <div class="bg-white rounded-2xl shadow-shadow-2 w-[95%] sm:w-full max-w-lg mx-auto p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
           <div class="flex items-center justify-between mb-5">
             <h2 class="font-montaga text-xl font-bold text-text-black">{{ editingMilestone ? 'Edit' : 'Add' }} Milestone</h2>
             <button @click="closeMilestoneModal" class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-text-gray hover:bg-gray-50 transition-colors">
@@ -681,7 +679,7 @@ function formatSize(mb) {
               <textarea v-model="milestoneForm.description" rows="2" placeholder="Optional description"
                 class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black placeholder-text-gray focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all resize-none"></textarea>
             </div>
-            <div class="grid grid-cols-3 gap-4">
+           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label class="block font-inter text-sm font-medium text-text-black mb-1.5">Due Date</label>
                 <input v-model="milestoneForm.dueDate" type="text" placeholder="e.g. Jan 2024" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black placeholder-text-gray focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all" />
@@ -717,7 +715,7 @@ function formatSize(mb) {
           <form @submit.prevent="submitCreateFolder">
             <input v-model="newFolderName" type="text" placeholder="Folder name"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black placeholder-text-gray focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all mb-4" />
-            <div class="flex justify-end gap-3">
+            <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
               <button type="button" @click="showCreateFolder = false" class="px-5 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black hover:bg-gray-50 transition-colors">Cancel</button>
               <button type="submit" class="px-5 py-2.5 bg-main hover:bg-main-hover text-white font-inter text-sm font-medium rounded-xl transition-colors shadow-shadow-1">Create</button>
             </div>
@@ -739,7 +737,7 @@ function formatSize(mb) {
           <form @submit.prevent="submitRename">
             <input v-model="renameValue" type="text" placeholder="New name"
               class="w-full px-4 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black placeholder-text-gray focus:outline-none focus:border-main focus:ring-2 focus:ring-main/20 transition-all mb-4" />
-            <div class="flex justify-end gap-3">
+          <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
               <button type="button" @click="renameTarget = null" class="px-5 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black hover:bg-gray-50 transition-colors">Cancel</button>
               <button type="submit" class="px-5 py-2.5 bg-main hover:bg-main-hover text-white font-inter text-sm font-medium rounded-xl transition-colors shadow-shadow-1">Save</button>
             </div>
@@ -761,7 +759,7 @@ function formatSize(mb) {
               <p class="font-inter text-sm text-text-gray">Are you sure you want to delete <span class="font-medium text-text-black">{{ showDeleteConfirm.item.name }}</span>? This action cannot be undone.</p>
             </div>
           </div>
-          <div class="flex justify-end gap-3">
+          <div class="flex flex-col-reverse sm:flex-row justify-end gap-3">
             <button @click="showDeleteConfirm = null" class="px-5 py-2.5 border border-gray-200 rounded-xl font-inter text-sm text-text-black hover:bg-gray-50 transition-colors">Cancel</button>
             <button @click="confirmDeleteItem" class="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-inter text-sm font-medium rounded-xl transition-colors shadow-shadow-1">Delete</button>
           </div>

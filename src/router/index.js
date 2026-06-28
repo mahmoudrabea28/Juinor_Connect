@@ -161,7 +161,7 @@ router.beforeEach(async (to, from, next) => {
   } else {
     // Session is gone → send them Home (logged-out landing) instead of
     // straight to the register screen.
-    next('/Home')
+    next('/login')
   }
 })
 export default router

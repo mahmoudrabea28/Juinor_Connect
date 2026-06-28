@@ -8,12 +8,7 @@
         @click="activeLink = 'Home'"
       >
         <span class="navbar__logo-crop">
-          <button
-            class="navbar__hamburger"
-            @click="mobileMenuOpen = !mobileMenuOpen"
-          >
-            ☰
-          </button>
+         
           <img src="../assets/images/Logo.png" alt="Junior Connect" />
         </span>
       </router-link>
@@ -109,6 +104,12 @@
           </div>
         </template>
       </div>
+       <button
+            class="navbar__hamburger"
+            @click="mobileMenuOpen = !mobileMenuOpen"
+          >
+            ☰
+          </button>
     </div>
   </header>
 </template>
@@ -384,11 +385,27 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 900px) {
-  .navbar__hamburger {
+.navbar__inner{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar__hamburger{
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 28px;
+    border: none;
+    background: transparent;
+    color: #3562ff;
+    cursor: pointer;
+    margin-left: 12px;
+  }
+
+  .navbar__actions{
+    margin-left: auto;
+    margin-right: 12px;
   }
 
   .navbar__nav {
@@ -421,9 +438,6 @@ onBeforeUnmount(() => {
     pointer-events: auto;
   }
 
-  .navbar__actions {
-    margin-left: auto;
-  }
 }
 
 @media (max-width: 560px) {

@@ -54,7 +54,7 @@ function toggleTaskComplete(taskId) {
         <div class="flex flex-col gap-3 min-h-[200px] w-full">
           <div v-for="card in col.cards" :key="card.id" draggable="true"
             @dragstart="e => onDragStart(e, card.id)" @dragend="onDragEnd"
-            :class="['w-full bg-white rounded-2xl border border-gray-100 shadow-shadow-1 p-4 hover:shadow-shadow-2 transition-shadow group cursor-grab active:cursor-grabbing', draggedTaskId === card.id ? 'opacity-50' : '']">
+            :class="['w-full bg-white rounded-2xl border border-gray-100 shadow-shadow-1 p-4 hover:shadow-shadow-2 transition-shadow group', draggedTaskId === card.id ? 'opacity-50' : '']">
             <template v-if="card.completedYesterday">
               <p class="text-text-gray/40 text-base font-semibold line-through font-inter">{{ card.title }}</p>
               <div class="flex items-center gap-1 mt-2 font-inter text-xs text-main">
@@ -66,23 +66,6 @@ function toggleTaskComplete(taskId) {
               <div class="flex items-center justify-between mb-2">
                 <span :class="['font-inter text-xs font-semibold px-2 py-0.5 rounded-full',
                   card.priority === 'HIGH' ? 'bg-red-100 text-red-600' : card.priority === 'MED' ? 'bg-yellow-100 text-yellow-700' : 'bg-green-100 text-green-600']">{{ card.priority }}</span>
-                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div class="relative" @click.stop>
-                    <button class="text-text-gray hover:text-text-black p-0.5 rounded transition-colors">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                    </button>
-                    <div class="absolute right-0 top-full mt-1 bg-white rounded-xl border border-gray-100 shadow-shadow-2 py-1 z-20 min-w-[160px] hidden group-hover:block">
-                      <button v-for="target in (project.boardColumns || []).filter(c => c.id !== col.id)" :key="target.id"
-                        @click="moveTask(project.id, card.id, target.id)"
-                        class="block w-full text-left px-4 py-1.5 font-inter text-xs text-text-gray hover:bg-[#F8FAFC] hover:text-text-black transition-colors">
-                        Move to {{ target.label }}
-                      </button>
-                    </div>
-                  </div>
-                  <button @click="deleteTask(col.id, card.id)" class="text-text-gray hover:text-red-500 p-0.5 rounded transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                  </button>
-                </div>
               </div>
               <div class="flex items-center gap-2 mb-1">
  <input

@@ -10,7 +10,7 @@ defineProps({
     <div class="flex items-center justify-between mb-5">
       <p class="font-inter text-sm text-text-gray">{{ project.teamMembers?.length || 0 }} members</p>
     </div>
-    <div class="grid grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="member in (project.teamMembers || [])" :key="member.id"
         class="bg-white rounded-2xl border border-gray-100 shadow-shadow-1 px-section-pad-x py-8 hover:shadow-shadow-2 transition-shadow">
         <div class="flex items-start justify-between mb-4">
